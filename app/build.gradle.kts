@@ -48,6 +48,12 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    externalNativeBuild{
+        ndkBuild{
+            path("src/main/jni/Android.mk")
+        }
+    }
 }
 
 dependencies {
@@ -60,6 +66,7 @@ dependencies {
     implementation("com.google.firebase:firebase-storage-ktx")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.material:material")
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.google.services)
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.core.ktx)

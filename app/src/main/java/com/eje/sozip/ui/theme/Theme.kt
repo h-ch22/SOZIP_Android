@@ -32,13 +32,15 @@ private val LightColorScheme = lightColorScheme(
 private val onLightColorPalette = ColorPalette(
     background = background,
     txtColor = txtColor,
-    btnColor = btnColor
+    btnColor = btnColor,
+    txtFieldColor = txtField
 )
 
 private val onDarkColorPalette = ColorPalette(
     background = backgroundAsDark,
     txtColor = txtColorAsDark,
-    btnColor = btnColorAsDark
+    btnColor = btnColorAsDark,
+    txtFieldColor = txtFieldAsDark
 )
 
 @Composable
