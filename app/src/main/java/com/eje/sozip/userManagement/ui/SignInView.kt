@@ -1,5 +1,7 @@
 package com.eje.sozip.userManagement.ui
 
+import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,22 +21,28 @@ import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.ArrowCircleRight
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -43,20 +51,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.core.DataStore
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.eje.sozip.R
+import com.eje.sozip.frameworks.helper.AES256Util
+import com.eje.sozip.frameworks.helper.DataStoreUtil
 import com.eje.sozip.frameworks.models.OnStartScreens
-import com.eje.sozip.splash
+import com.eje.sozip.frameworks.ui.MainActivity
+import com.eje.sozip.frameworks.ui.ProgressView
 import com.eje.sozip.ui.theme.SOZIPColorPalette
 import com.eje.sozip.ui.theme.SOZIPTheme
 import com.eje.sozip.ui.theme.accent
-import com.eje.sozip.ui.theme.black
 import com.eje.sozip.ui.theme.gray
 import com.eje.sozip.ui.theme.red
 import com.eje.sozip.ui.theme.white
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
+import com.eje.sozip.userManagement.helper.UserManagement
+import com.eje.sozip.userManagement.models.AuthInfoModel
+import kotlinx.coroutines.flow.collect
+import java.util.prefs.Preferences
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,7 +83,35 @@ fun SignInView(){
         mutableStateOf("")
     }
 
+    var showDialog by remember{
+        mutableStateOf(false)
+    }
+
+    var buttonDisable by remember{
+        mutableStateOf(false)
+    }
+
+    var showProgress by remember{
+        mutableStateOf(false)
+    }
+
+    var signedIn by remember{
+        mutableStateOf(false)
+    }
+
+    var saveData by remember{
+        mutableStateOf(true)
+    }
+
+    val helper = UserManagement()
+
+    val context = LocalContext.current
+
     val navController = rememberNavController()
+
+    val dataStoreUtil = DataStoreUtil(context)
+
+    val authInfo = dataStoreUtil.getFromDataStore().collectAsState(initial = AuthInfoModel(email = "", password = ""))
 
     SOZIPTheme {
         NavHost(navController = navController, startDestination = "SignInView"){
@@ -78,6 +120,25 @@ fun SignInView(){
             }
 
             composable(route = "SignInView"){
+                LaunchedEffect(key1 = true){
+                    Log.d("SignInView", "Launched")
+                    if(AES256Util.decrypt(authInfo.value.email) != "" &&
+                        AES256Util.decrypt(authInfo.value.password) != ""){
+                        buttonDisable = true
+                        showProgress = true
+
+                        helper.signIn(email = AES256Util.decrypt(authInfo.value.email), password = AES256Util.decrypt(authInfo.value.password)){
+                            if(it){
+                                saveData = false
+                                signedIn = true
+                            } else{
+                                showProgress = false
+                                buttonDisable = false
+                            }
+                        }
+                    }
+                }
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = SOZIPColorPalette.current.background
@@ -144,7 +205,7 @@ fun SignInView(){
                                 unfocusedLeadingIconColor = SOZIPColorPalette.current.txtColor,
                                 unfocusedIndicatorColor = SOZIPColorPalette.current.txtColor,
                                 unfocusedSupportingTextColor = SOZIPColorPalette.current.txtColor,
-                                selectionColors = TextSelectionColors(handleColor = accent, backgroundColor = white)
+                                selectionColors = TextSelectionColors(handleColor = accent, backgroundColor = accent.copy(alpha = 0.5f))
                             ),
                             maxLines = 1,
                             singleLine = true
@@ -183,7 +244,7 @@ fun SignInView(){
                                 unfocusedLeadingIconColor = SOZIPColorPalette.current.txtColor,
                                 unfocusedIndicatorColor = SOZIPColorPalette.current.txtColor,
                                 unfocusedSupportingTextColor = SOZIPColorPalette.current.txtColor,
-                                selectionColors = TextSelectionColors(handleColor = accent, backgroundColor = white)
+                                selectionColors = TextSelectionColors(handleColor = accent, backgroundColor = accent.copy(alpha = 0.5f))
 
                             ),
                             visualTransformation = PasswordVisualTransformation(),
@@ -193,10 +254,23 @@ fun SignInView(){
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        Button(onClick = {  },
+                        Button(onClick = {
+                            buttonDisable = true
+                            showProgress = true
+
+                            helper.signIn(email = email.value, password = password.value){
+                                if(it){
+                                    signedIn = true
+                                } else{
+                                    showProgress = false
+                                    buttonDisable = false
+                                    showDialog = true
+                                }
+                            }
+                        },
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            enabled = !email.value.isEmpty() && !password.value.isEmpty(),
+                            enabled = !email.value.isEmpty() && !password.value.isEmpty() && !buttonDisable,
                             contentPadding = PaddingValues(20.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = accent, disabledContainerColor = gray
@@ -214,7 +288,7 @@ fun SignInView(){
                         Button(onClick = {
                             navController.navigate(OnStartScreens.SignUpView){
                                 popUpTo(OnStartScreens.SignInView){
-                                    inclusive = true
+                                    inclusive = false
                                 }
                             }
                         },
@@ -229,8 +303,8 @@ fun SignInView(){
                                 modifier = Modifier.padding(5.dp)){
                                 Column(verticalArrangement = Arrangement.Center,
                                     horizontalAlignment = Alignment.Start){
-                                    Text("처음 사용하시나요?", fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                                    Text("학교 인증 바로가기", fontSize = 12.sp)
+                                    Text("처음 사용하시나요?", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = white)
+                                    Text("학교 인증 바로가기", fontSize = 12.sp, color = white)
                                 }
 
                                 Spacer(modifier = Modifier.width(60.dp))
@@ -245,6 +319,43 @@ fun SignInView(){
                             color = gray,
                             fontSize = 10.sp,
                             textAlign = TextAlign.Center)
+                    }
+
+                    if(showDialog){
+                        AlertDialog(
+                            onDismissRequest = {  },
+                            confirmButton = {
+                                TextButton(onClick = {
+                                    showDialog = false
+                                }){
+                                    Text("확인", color = accent, fontWeight = FontWeight.Bold)
+                                }
+                            },
+                            title = {
+                                Text("오류")
+                            },
+                            text = {
+                                Text("요청을 처리하는 중 문제가 발생했습니다.\n로그인 정보가 올바르지 않거나, 네트워크 상태를 확인한 후 다시 시도하십시오.")
+                            },
+                            icon = {
+                                Icon(imageVector = Icons.Default.Warning, contentDescription = null)
+                            }
+                        )
+                    }
+
+                    if(showProgress){
+                        ProgressView()
+                    }
+
+                    if(signedIn){
+                        LaunchedEffect(key1 = true){
+                            if(saveData){
+                                dataStoreUtil.saveToDataStore(AES256Util.encrypt(email.value), AES256Util.encrypt(password.value))
+                            }
+
+                            context.startActivity(Intent(context, MainActivity :: class.java))
+
+                        }
                     }
                 }
             }

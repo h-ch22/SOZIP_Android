@@ -1,6 +1,8 @@
-package com.eje.sozip
+package com.eje.sozip.frameworks.ui
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -19,31 +21,32 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.eje.sozip.R
+import com.eje.sozip.frameworks.helper.AES256Util
+import com.eje.sozip.frameworks.helper.DataStoreUtil
 import com.eje.sozip.frameworks.models.OnStartScreens
 import com.eje.sozip.frameworks.models.SplashViewModel
 import com.eje.sozip.ui.theme.SOZIPColorPalette
 import com.eje.sozip.ui.theme.SOZIPTheme
 import com.eje.sozip.ui.theme.accent
+import com.eje.sozip.userManagement.helper.UserManagement
+import com.eje.sozip.userManagement.models.AuthInfoModel
 import com.eje.sozip.userManagement.ui.SignInView
-import com.google.firebase.auth.FirebaseAuth
 
-class MainActivity : ComponentActivity() {
+class StartActivity : ComponentActivity() {
     private val viewModel : SplashViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,6 +76,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun splash(navController : NavController, viewModel: SplashViewModel){
+    val context = LocalContext.current
+
     LaunchedEffect(key1 = true){
         if(!viewModel.hasSignedIn.value){
             navController.navigate(OnStartScreens.SignInView){
@@ -80,6 +85,8 @@ fun splash(navController : NavController, viewModel: SplashViewModel){
                     inclusive = true
                 }
             }
+        } else{
+            context.startActivity(Intent(context, MainActivity :: class.java))
         }
     }
 

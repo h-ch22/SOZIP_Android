@@ -29,7 +29,6 @@ class AES256Util{
                 val textBytes = Base64.decode(encoded, Base64.DEFAULT)
                 val ivSpec = IvParameterSpec(getNativeKey2().toByteArray())
                 val key = SecretKeySpec(getNativeKey1().toByteArray(), "AES")
-                println(key.toString() + ivSpec.toString())
 
                 val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
                 cipher.init(Cipher.DECRYPT_MODE, key, ivSpec)

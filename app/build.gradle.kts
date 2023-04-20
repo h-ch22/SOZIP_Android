@@ -51,7 +51,7 @@ android {
 
     externalNativeBuild{
         ndkBuild{
-            path("src/main/jni/Android.mk")
+            path = file("src/main/jni/Android.mk")
         }
     }
 }
@@ -66,6 +66,10 @@ dependencies {
     implementation("com.google.firebase:firebase-storage-ktx")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.material:material")
+    implementation(libs.play.services.location)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.map.sdk)
+    implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.google.services)
     implementation(libs.accompanist.systemuicontroller)

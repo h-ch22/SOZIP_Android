@@ -1,6 +1,5 @@
 package com.eje.sozip.userManagement.ui
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,16 +19,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.eje.sozip.R
+import com.eje.sozip.frameworks.helper.AES256Util
+import com.eje.sozip.frameworks.helper.DataStoreUtil
 import com.eje.sozip.frameworks.models.OnStartScreens
 import com.eje.sozip.ui.theme.SOZIPColorPalette
 import com.eje.sozip.ui.theme.SOZIPTheme
@@ -50,6 +51,9 @@ fun InProgressSignUpView(
     val authResultCode = remember{
         mutableStateOf(AuthResultModel.UNKNOWN)
     }
+    val context = LocalContext.current
+    val dataStore = DataStoreUtil(context)
+
 
     SOZIPTheme {
         LaunchedEffect(key1 = true){
@@ -113,6 +117,10 @@ fun InProgressSignUpView(
 
         NavHost(navController = navController, startDestination = "InProgressView") {
             composable(route = "AuthSuccessView") {
+                LaunchedEffect(key1 = true){
+                    dataStore.saveToDataStore(AES256Util.encrypt(userInfo.email), AES256Util.encrypt(password))
+                }
+
                 AuthSuccessView()
             }
 

@@ -6,5 +6,8 @@ data class UserInfoModel(
     var email : String = "",
     var studentNo : String = "",
     var school : String = "",
-    var nickName : String = ""
+    var nickName : String = "",
+    var uid : String = "",
+    var profile : String = "chick",
+    var profile_bg : String = "bg_3"
     )

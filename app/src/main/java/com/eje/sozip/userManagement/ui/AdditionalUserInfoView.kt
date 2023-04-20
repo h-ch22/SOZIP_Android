@@ -158,7 +158,7 @@ fun AdditionalUserInfoView(
                                 unfocusedLeadingIconColor = SOZIPColorPalette.current.txtColor,
                                 unfocusedIndicatorColor = SOZIPColorPalette.current.txtColor,
                                 unfocusedSupportingTextColor = SOZIPColorPalette.current.txtColor,
-                                selectionColors = TextSelectionColors(handleColor = accent, backgroundColor = white)
+                                selectionColors = TextSelectionColors(handleColor = accent, backgroundColor = accent.copy(alpha = 0.5f))
                             ),
                             maxLines = 1,
                             singleLine = true
@@ -226,7 +226,7 @@ fun AdditionalUserInfoView(
                                         unfocusedLeadingIconColor = SOZIPColorPalette.current.txtColor,
                                         unfocusedIndicatorColor = SOZIPColorPalette.current.txtColor,
                                         unfocusedSupportingTextColor = SOZIPColorPalette.current.txtColor,
-                                        selectionColors = TextSelectionColors(handleColor = accent, backgroundColor = white)
+                                        selectionColors = TextSelectionColors(handleColor = accent, backgroundColor = accent.copy(alpha = 0.5f))
                                     ),
                                     maxLines = 1,
                                     singleLine = true,
@@ -270,7 +270,7 @@ fun AdditionalUserInfoView(
                                         unfocusedLeadingIconColor = SOZIPColorPalette.current.txtColor,
                                         unfocusedIndicatorColor = SOZIPColorPalette.current.txtColor,
                                         unfocusedSupportingTextColor = SOZIPColorPalette.current.txtColor,
-                                        selectionColors = TextSelectionColors(handleColor = accent, backgroundColor = white)
+                                        selectionColors = TextSelectionColors(handleColor = accent, backgroundColor = accent.copy(alpha = 0.5f))
                                     ),
                                     maxLines = 1,
                                     singleLine = true,
