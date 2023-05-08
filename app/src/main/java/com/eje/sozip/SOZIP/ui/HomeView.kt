@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,23 +20,32 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.SelectableChipColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -65,17 +75,19 @@ import com.eje.sozip.SOZIP.models.SOZIPListModel
 import com.eje.sozip.SOZIP.models.TimingType
 import com.eje.sozip.frameworks.helper.AES256Util
 import com.eje.sozip.frameworks.models.OnStartScreens
+import com.eje.sozip.frameworks.ui.NotificationView
 import com.eje.sozip.frameworks.ui.SearchBar
 import com.eje.sozip.ui.theme.SOZIPColorPalette
 import com.eje.sozip.ui.theme.SOZIPTheme
 import com.eje.sozip.ui.theme.accent
 import com.eje.sozip.ui.theme.gray
+import com.eje.sozip.ui.theme.white
 import com.eje.sozip.userManagement.helper.UserManagement
 import java.text.SimpleDateFormat
 import java.util.Date
 
 fun checkTimes() : TimingType{
-    val pattern = "kk"
+    val pattern = "HH"
     val format = SimpleDateFormat(pattern)
 
     val currentAsString=format.format(Date())
@@ -109,7 +121,7 @@ fun HomeView(){
     }
 
     val searchText = remember{
-        mutableStateOf(TextFieldValue(""))
+        mutableStateOf("")
     }
 
     var selectedIndex by remember{
@@ -136,6 +148,10 @@ fun HomeView(){
                 SOZIPDetailView(selectedIndex)
             }
 
+            composable(route = "NotificationView"){
+                NotificationView()
+            }
+
             composable(route = "Home"){
                 Surface(modifier = Modifier.fillMaxSize(), color = SOZIPColorPalette.current.background) {
                     Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(horizontal = 20.dp)) {
@@ -145,7 +161,11 @@ fun HomeView(){
                             Spacer(modifier = Modifier.weight(1f))
 
                             IconButton(onClick = {
-
+                                navController.navigate("NotificationView"){
+                                    popUpTo("Home"){
+                                        inclusive = false
+                                    }
+                                }
                             }) {
                                 Icon(imageVector = Icons.Default.Notifications, contentDescription = null, tint = SOZIPColorPalette.current.txtColor)
                             }
@@ -167,27 +187,65 @@ fun HomeView(){
 
                         Spacer(modifier = Modifier.height(5.dp))
 
-                        SearchBar(state = searchText, placeHolder = "원하는 소집을 검색해보세요!", modifier = Modifier.fillMaxWidth().shadow(5.dp))
-                        val searchedText = searchText.value.text
+                        val searchedText = searchText.value
+
+                        androidx.compose.material3.SearchBar(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight(),
+                            query = searchText.value,
+                            onQueryChange = {searchText.value = it},
+                            onSearch = {},
+                            active = false,
+                            onActiveChange = {
+
+                            },
+                            colors = SearchBarDefaults.colors(
+                                containerColor = SOZIPColorPalette.current.btnColor.copy(0.8f)
+                            ),
+                            placeholder = {Text("원하는 소집을 검색해보세요!")},
+                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
+                        ) {
+
+                        }
 
                         Spacer(modifier = Modifier.height(10.dp))
 
                         if(!SOZIPHelper.categoryList.isEmpty()){
                             LazyRow(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()){
                                 item{
-                                    TextButton(onClick = { selectedTag = -1 }, modifier = Modifier.wrapContentSize()) {
-                                        CategoryListModel(category = "전체", selected = selectedTag == -1)
-                                    }
+                                    FilterChip(selected = selectedTag == -1, onClick = { selectedTag = -1 }, leadingIcon = {
+                                        if(selectedTag == -1){
+                                            Icon(imageVector = Icons.Default.Check, contentDescription = null, modifier = Modifier.size(FilterChipDefaults.IconSize))
+                                        }
+                                    }, label = {
+                                        Text("전체")
+                                    }, colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = accent.copy(0.7f),
+                                        selectedLabelColor = white,
+                                        selectedLeadingIconColor = white
+                                    ))
                                 }
 
                                 items(items = SOZIPHelper.categoryList){
-                                    TextButton(onClick = {
+                                    Spacer(modifier = Modifier.width(10.dp))
+
+                                    FilterChip(selected = selectedTag > -1 && it == SOZIPHelper.categoryList[selectedTag], onClick = {
                                         selectedTag = SOZIPHelper.categoryList.indexOf(it)
                                         SOZIPHelper.SOZIPList.filter {
                                             it.category == SOZIPHelper.categoryList[selectedTag]
-                                        }}, modifier = Modifier.wrapContentSize()) {
-                                        CategoryListModel(category = it, selected = selectedTag > -1 && it == SOZIPHelper.categoryList[selectedTag])
-                                    }
+                                        }}, leadingIcon = {
+                                        if(selectedTag > -1 && it == SOZIPHelper.categoryList[selectedTag]){
+                                            Icon(imageVector = Icons.Default.Check, contentDescription = null, modifier = Modifier.size(FilterChipDefaults.IconSize))
+                                        }
+                                    }, label = {
+                                        Text(it)
+                                    }, colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = accent.copy(0.7f),
+                                        selectedLabelColor = white,
+                                        selectedLeadingIconColor = white
+                                    ))
+
                                 }
                             }
                         }
@@ -197,26 +255,51 @@ fun HomeView(){
                         if(SOZIPHelper.SOZIPList.isEmpty()){
                             Text(text = "지금은 진행 중인 소집이 없어요.", color = gray, fontSize = 12.sp)
                             Spacer(modifier = Modifier.height(5.dp))
-                            TextButton(onClick = { /*TODO*/ }) {
+                            TextButton(onClick = {
+
+                            }) {
                                 Text("지금 소집을 만들어보세요!", color = accent, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                             }
                         } else{
                             LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)){
-                                items(items = SOZIPHelper.SOZIPList.filter{
-                                    it.SOZIPName.contains(searchedText, ignoreCase = true)
-                                }, key = {it.docID}){
-                                    SOZIPListModel(data = it,
-                                        modifier = Modifier
-                                            .animateItemPlacement()){
-                                        selectedIndex = it
-                                        navController.navigate("SOZIPDetailView"){
-                                            popUpTo("Home"){
-                                                inclusive = false
+                                if(selectedTag > -1){
+                                    items(items = SOZIPHelper.SOZIPList.filter{
+                                        (it.SOZIPName.contains(searchedText, ignoreCase = true) && it.category == SOZIPHelper.categoryList[selectedTag])
+                                    }, key = {
+                                        it.docID
+                                    }){
+                                        SOZIPListModel(data = it,
+                                            modifier = Modifier
+                                                .animateItemPlacement()){
+                                            selectedIndex = it
+                                            navController.navigate("SOZIPDetailView"){
+                                                popUpTo("Home"){
+                                                    inclusive = false
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                } else{
+                                    itemsIndexed(key = { index, item ->
+                                        item.docID
+                                    }, items = SOZIPHelper.SOZIPList.filter{
+                                        it.SOZIPName.contains(searchedText, ignoreCase = true)
+                                    }){ index, item ->
+                                        SOZIPListModel(
+                                            data = item,
+                                            modifier = Modifier
+                                                .animateItemPlacement()){
+                                            selectedIndex = item
+                                            navController.navigate("SOZIPDetailView"){
+                                                popUpTo("Home"){
+                                                    inclusive = false
+                                                }
                                             }
                                         }
                                     }
-
                                 }
+
                             }
                         }
                     }

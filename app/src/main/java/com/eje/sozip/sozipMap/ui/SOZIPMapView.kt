@@ -1,23 +1,28 @@
 package com.eje.sozip.sozipMap.ui
 
 import android.Manifest
-import android.annotation.SuppressLint
-import android.content.Context
 import android.content.pm.PackageManager
-import android.location.LocationManager
 import android.os.Bundle
-import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.IconButton
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -30,7 +35,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -39,28 +43,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.eje.sozip.SOZIP.helper.SOZIPHelper
 import com.eje.sozip.SOZIP.models.SOZIPDataModel
 import com.eje.sozip.SOZIP.ui.SOZIPDetailView
-import com.eje.sozip.frameworks.ui.MainActivity
-import com.eje.sozip.frameworks.ui.ModalDialog
+import com.eje.sozip.sozipMap.helper.LocationTrackingManager
 import com.eje.sozip.ui.theme.SOZIPColorPalette
 import com.eje.sozip.ui.theme.SOZIPTheme
 import com.eje.sozip.ui.theme.SOZIP_BG_1
 import com.eje.sozip.ui.theme.accent
 import com.eje.sozip.ui.theme.black
+import com.eje.sozip.ui.theme.gray
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionState
-import com.google.accompanist.permissions.PermissionStatus
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
-import com.google.android.gms.common.internal.service.Common
-import com.google.android.gms.location.LocationServices
-import com.naver.maps.geometry.Coord
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraUpdate
@@ -68,21 +64,15 @@ import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.overlay.Marker
-import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.util.MarkerIcons
 import kotlinx.coroutines.launch
-import java.util.concurrent.Executor
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun SOZIPMapView(){
     val context = LocalContext.current
     val lifeCycleOwner = LocalLifecycleOwner.current
     val coroutineScope = rememberCoroutineScope()
-    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-    val showDialog = remember {
-        mutableStateOf(false)
-    }
 
     var showAlert by remember{
         mutableStateOf(false)
@@ -92,44 +82,43 @@ fun SOZIPMapView(){
         mutableStateOf(SOZIPDataModel())
     }
 
-    val permissions = arrayOf(
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_FINE_LOCATION
-    )
+    val currentLocation by remember{mutableStateOf(LatLng(37.541, 126.986))}
 
-    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()){
+    val modalSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden,
+        confirmStateChange = {it != ModalBottomSheetValue.HalfExpanded},
+        skipHalfExpanded = true)
+
+    val locationTrackingManager = LocationTrackingManager(context)
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ){
         if(it){
-
-        } else{
-
         }
     }
 
-    lateinit var locationSource : FusedLocationSource
-    val LOCATION_PERMISSION_REQUEST_CODE = 1000
+
+    BackHandler {
+        if(modalSheetState.isVisible){
+            coroutineScope.launch {
+                modalSheetState.hide()
+            }
+        }
+    }
 
     SOZIPTheme {
         Surface(modifier = Modifier.fillMaxSize(), color = SOZIPColorPalette.current.background) {
-            var coord = LatLng(37.541, 126.986)
+            LaunchedEffect(key1 = true){
+                val fineLocationPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+                val coarseLocationPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
 
-            if (permissions.all {
-                    ContextCompat.checkSelfPermission(
-                        context,
-                        it
-                    ) == PackageManager.PERMISSION_DENIED
-                }
-            ){
-                showAlert = true
-            }
+                if (fineLocationPermission == PackageManager.PERMISSION_DENIED ||
+                    coarseLocationPermission == PackageManager.PERMISSION_DENIED){
+                    showAlert = true
+                } else{
 
-            locationSource = FusedLocationSource(context as MainActivity, 1000)
-
-            fusedLocationClient.lastLocation.addOnSuccessListener {
-                    it -> it.also{
-                    coord = LatLng(it.latitude, it.longitude)
                 }
             }
-
 
             val mapView = remember{
                 var mapView : NaverMap?
@@ -137,7 +126,7 @@ fun SOZIPMapView(){
                 MapView(context).apply {
                     getMapAsync{naverMap ->
                         mapView = naverMap
-                        val camUpdate = CameraUpdate.scrollTo(coord).animate(CameraAnimation.Easing)
+                        val camUpdate = CameraUpdate.scrollTo(currentLocation).animate(CameraAnimation.Easing)
                         naverMap.moveCamera(camUpdate)
                         naverMap.isIndoorEnabled = true
                         naverMap.uiSettings.isCompassEnabled = true
@@ -145,19 +134,8 @@ fun SOZIPMapView(){
                         naverMap.uiSettings.isLocationButtonEnabled = true
                         naverMap.uiSettings.isScaleBarEnabled = true
                         naverMap.uiSettings.isZoomControlEnabled = true
-
-                        if(permissions.all {
-                                ContextCompat.checkSelfPermission(
-                                    context,
-                                    it
-                                ) == PackageManager.PERMISSION_DENIED
-                            }){
-                            naverMap.locationTrackingMode = LocationTrackingMode.None
-                        } else{
-                            naverMap.locationTrackingMode = LocationTrackingMode.Face
-                        }
-
-                        naverMap.locationSource = locationSource
+                        naverMap.locationSource = locationTrackingManager
+                        naverMap.locationTrackingMode = LocationTrackingMode.Follow
 
                         SOZIPHelper.SOZIPList.forEach{
                             val location = it.location.split(", ")
@@ -177,8 +155,16 @@ fun SOZIPMapView(){
                                     isClickable = true
 
                                     this.setOnClickListener { o ->
-                                        showDialog.value = true
                                         selectedData = it
+
+                                        coroutineScope.launch {
+                                            if(modalSheetState.isVisible){
+                                                modalSheetState.hide()
+                                            } else{
+                                                modalSheetState.show()
+                                            }
+                                        }
+
                                         true
                                     }
 
@@ -219,15 +205,12 @@ fun SOZIPMapView(){
 
             if(showAlert){
                 AlertDialog(
-                    onDismissRequest = {  },
+                    onDismissRequest = { showAlert = false },
+
                     confirmButton = {
                         TextButton(onClick = {
                             showAlert = false
-                            checkAndRequestLocationPermissions(
-                                context,
-                                permissions,
-                                launcherMultiplePermissions
-                            )
+                            permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                         }){
                             Text("확인", color = accent, fontWeight = FontWeight.Bold)
                         }
@@ -244,11 +227,35 @@ fun SOZIPMapView(){
                 )
             }
 
-            if(showDialog.value){
-                ModalDialog(onDismissRequest = { showDialog.value = false }, modifier = Modifier.fillMaxWidth()) {
-                    SOZIPDetailView(data = selectedData, showTopBar = false)
+            ModalBottomSheetLayout(sheetContent = {
+                if(modalSheetState.isVisible){
+                    Surface(modifier = Modifier.background(SOZIPColorPalette.current.background)) {
+                        Column(modifier = Modifier.fillMaxWidth().background(SOZIPColorPalette.current.background)) {
+                            Row(modifier = Modifier.padding(horizontal = 20.dp)){
+                                Spacer(modifier = Modifier.weight(1f))
+
+                                IconButton(onClick = {
+                                    coroutineScope.launch {
+                                        modalSheetState.hide()
+                                    }
+                                }) {
+                                    Icon(imageVector = Icons.Default.Cancel, contentDescription = null, tint = gray)
+                                }
+                            }
+                            SOZIPDetailView(selectedData, showTopBar = false)
+                        }
+
+                    }
                 }
+            },
+                sheetState = modalSheetState,
+                modifier = Modifier.fillMaxSize(),
+                sheetShape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp)
+            ) {
+
             }
+
+
         }
     }
 }

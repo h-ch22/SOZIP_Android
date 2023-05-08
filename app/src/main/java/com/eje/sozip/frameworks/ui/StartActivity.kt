@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
@@ -21,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -33,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.eje.sozip.R
 import com.eje.sozip.frameworks.helper.AES256Util
@@ -45,14 +48,19 @@ import com.eje.sozip.ui.theme.accent
 import com.eje.sozip.userManagement.helper.UserManagement
 import com.eje.sozip.userManagement.models.AuthInfoModel
 import com.eje.sozip.userManagement.ui.SignInView
+import kotlin.system.exitProcess
 
 class StartActivity : ComponentActivity() {
     private val viewModel : SplashViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             val navController = rememberNavController()
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = navBackStackEntry?.destination?.route
+            val activity = (LocalContext.current as? StartActivity)
 
             SOZIPTheme {
                 NavHost(navController = navController, startDestination = "Splash"){
@@ -66,6 +74,9 @@ class StartActivity : ComponentActivity() {
                     }
 
                     composable(route = "SignInView"){
+                        BackHandler {
+                            finishAffinity()
+                        }
                         SignInView()
                     }
                 }

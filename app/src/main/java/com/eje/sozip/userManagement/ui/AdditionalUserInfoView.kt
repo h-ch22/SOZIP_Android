@@ -24,6 +24,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -112,7 +114,8 @@ fun AdditionalUserInfoView(
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        TextField(
+                        OutlinedTextField(
+                            modifier = Modifier.fillMaxWidth(),
                             value = email.value,
                             onValueChange = { textVal : String ->
                                 email.value = textVal
@@ -132,9 +135,6 @@ fun AdditionalUserInfoView(
                                     }
                                 }
                             },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .shadow(5.dp),
                             label = { Text("대학 E-Mail") },
                             placeholder = { Text("대학 E-Mail") } ,
                             leadingIcon = {
@@ -143,20 +143,18 @@ fun AdditionalUserInfoView(
                                     contentDescription = null
                                 )
                             },
-                            colors = TextFieldDefaults.textFieldColors(
+                            colors = OutlinedTextFieldDefaults.colors(
                                 cursorColor = accent,
+                                focusedBorderColor = accent,
                                 errorCursorColor = red,
                                 errorLeadingIconColor = red,
                                 disabledPlaceholderColor = gray,
-                                focusedIndicatorColor = accent,
+                                focusedTextColor = accent,
                                 focusedLabelColor = accent,
                                 focusedLeadingIconColor = accent,
-                                textColor = accent,
                                 disabledTextColor = gray,
-                                containerColor = SOZIPColorPalette.current.btnColor,
                                 unfocusedLabelColor = SOZIPColorPalette.current.txtColor,
                                 unfocusedLeadingIconColor = SOZIPColorPalette.current.txtColor,
-                                unfocusedIndicatorColor = SOZIPColorPalette.current.txtColor,
                                 unfocusedSupportingTextColor = SOZIPColorPalette.current.txtColor,
                                 selectionColors = TextSelectionColors(handleColor = accent, backgroundColor = accent.copy(alpha = 0.5f))
                             ),
@@ -195,14 +193,12 @@ fun AdditionalUserInfoView(
 
                         AnimatedVisibility(visible = emailStatus.value.contains("대학교")) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally){
-                                TextField(
+                                OutlinedTextField(
+                                    modifier = Modifier.fillMaxWidth(),
                                     value = password.value,
                                     onValueChange = { textVal : String ->
                                         password.value = textVal
                                     },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .shadow(5.dp),
                                     label = { Text("비밀번호") },
                                     placeholder = { Text("비밀번호") } ,
                                     leadingIcon = {
@@ -211,20 +207,18 @@ fun AdditionalUserInfoView(
                                             contentDescription = null
                                         )
                                     },
-                                    colors = TextFieldDefaults.textFieldColors(
+                                    colors = OutlinedTextFieldDefaults.colors(
                                         cursorColor = accent,
+                                        focusedBorderColor = accent,
                                         errorCursorColor = red,
                                         errorLeadingIconColor = red,
                                         disabledPlaceholderColor = gray,
-                                        focusedIndicatorColor = accent,
+                                        focusedTextColor = accent,
                                         focusedLabelColor = accent,
                                         focusedLeadingIconColor = accent,
-                                        textColor = accent,
                                         disabledTextColor = gray,
-                                        containerColor = SOZIPColorPalette.current.btnColor,
                                         unfocusedLabelColor = SOZIPColorPalette.current.txtColor,
                                         unfocusedLeadingIconColor = SOZIPColorPalette.current.txtColor,
-                                        unfocusedIndicatorColor = SOZIPColorPalette.current.txtColor,
                                         unfocusedSupportingTextColor = SOZIPColorPalette.current.txtColor,
                                         selectionColors = TextSelectionColors(handleColor = accent, backgroundColor = accent.copy(alpha = 0.5f))
                                     ),
@@ -239,14 +233,12 @@ fun AdditionalUserInfoView(
 
                                 Spacer(modifier = Modifier.height(20.dp))
 
-                                TextField(
+                                OutlinedTextField(
+                                    modifier = Modifier.fillMaxWidth(),
                                     value = checkPassword.value,
                                     onValueChange = { textVal : String ->
                                         checkPassword.value = textVal
                                     },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .shadow(5.dp),
                                     label = { Text("한번 더") },
                                     placeholder = { Text("한번 더") } ,
                                     leadingIcon = {
@@ -255,20 +247,18 @@ fun AdditionalUserInfoView(
                                             contentDescription = null
                                         )
                                     },
-                                    colors = TextFieldDefaults.textFieldColors(
+                                    colors = OutlinedTextFieldDefaults.colors(
                                         cursorColor = accent,
+                                        focusedBorderColor = accent,
                                         errorCursorColor = red,
                                         errorLeadingIconColor = red,
                                         disabledPlaceholderColor = gray,
-                                        focusedIndicatorColor = accent,
+                                        focusedTextColor = accent,
                                         focusedLabelColor = accent,
                                         focusedLeadingIconColor = accent,
-                                        textColor = accent,
                                         disabledTextColor = gray,
-                                        containerColor = SOZIPColorPalette.current.btnColor,
                                         unfocusedLabelColor = SOZIPColorPalette.current.txtColor,
                                         unfocusedLeadingIconColor = SOZIPColorPalette.current.txtColor,
-                                        unfocusedIndicatorColor = SOZIPColorPalette.current.txtColor,
                                         unfocusedSupportingTextColor = SOZIPColorPalette.current.txtColor,
                                         selectionColors = TextSelectionColors(handleColor = accent, backgroundColor = accent.copy(alpha = 0.5f))
                                     ),

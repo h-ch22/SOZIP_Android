@@ -1,7 +1,7 @@
 [versions]
 accompanist-permissions = "0.24.13-rc"
 accompanist-systemuicontroller = "0.27.0"
-com-android-application = "8.1.0-alpha11"
+com-android-application = "8.1.0-beta01"
 datastore-preferences = "1.0.0"
 firebase-bom = "31.4.0"
 google-firebase-bom = "31.3.0"
@@ -22,6 +22,7 @@ play-services-location = "21.0.1"
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist-systemuicontroller" }
+accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "accompanist-permissions" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore-preferences" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-compose" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
@@ -47,7 +48,7 @@ material3 = { group = "androidx.compose.material3", name = "material3" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "com-android-application" }
-org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "org-jetbrains-kotlin-android" }
+org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version="1.8.10" }
 
 [bundles]
 

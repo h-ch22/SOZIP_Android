@@ -1,6 +1,7 @@
 package com.eje.sozip.SOZIP.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
@@ -38,21 +39,25 @@ fun SOZIPInsideMapView(data : SOZIPDataModel, modifier : Modifier){
         val mapView = remember{
             MapView(context).apply {
                 getMapAsync{naverMap ->
+                    Log.d("SOZIPInsideMapView", data.location)
                     val coordAsString = data.location.split(", ")
-                    val coord = LatLng(coordAsString[0].toDouble(), coordAsString[1].toDouble())
 
-                    val camUpdate = CameraUpdate.scrollTo(coord).animate(CameraAnimation.Easing)
-                    naverMap.moveCamera(camUpdate)
+                    if(coordAsString.size == 2){
+                        val coord = LatLng(coordAsString[0].toDouble(), coordAsString[1].toDouble())
 
-                    val marker = Marker()
-                    marker.position = coord
-                    marker.icon = MarkerIcons.BLACK
-                    marker.iconTintColor = (data.color ?: SOZIP_BG_1).toArgb()
-                    marker.captionText = "소집 장소"
-                    marker.captionColor = (data.color ?: SOZIP_BG_1).toArgb()
-                    marker.map = naverMap
-                    marker.subCaptionText = data.location_description
-                    marker.subCaptionColor = black.toArgb()
+                        val camUpdate = CameraUpdate.scrollTo(coord).animate(CameraAnimation.Easing)
+                        naverMap.moveCamera(camUpdate)
+
+                        val marker = Marker()
+                        marker.position = coord
+                        marker.icon = MarkerIcons.BLACK
+                        marker.iconTintColor = (data.color ?: SOZIP_BG_1).toArgb()
+                        marker.captionText = "소집 장소"
+                        marker.captionColor = (data.color ?: SOZIP_BG_1).toArgb()
+                        marker.map = naverMap
+                        marker.subCaptionText = data.location_description
+                        marker.subCaptionColor = black.toArgb()
+                    }
                 }
             }
         }

@@ -12,7 +12,7 @@ data class SOZIPDataModel(
     val location_description : String = "",
     val time : Date? = null,
     val Manager : String = "",
-    val participants : Map<String, String>? = null,
+    val participants : Map<String, String> = emptyMap(),
     val location : String = "",
     val address : String = "",
     val status : String = "",

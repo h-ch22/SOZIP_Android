@@ -15,11 +15,12 @@ class AES256Util{
 
             val keySpec = SecretKeySpec(getNativeKey1().toByteArray(), "AES")
             val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, IvParameterSpec(getNativeKey2().toByteArray()))
 
             val encrypted = cipher.doFinal(string?.toByteArray())
 
-            return Base64.encodeToString(encrypted, 0)
+            return String(Base64.encode(encrypted, Base64.NO_WRAP))
         }
 
         fun decrypt(encoded : String?) : String{

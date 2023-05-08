@@ -13,7 +13,7 @@ android {
         minSdk = 29
         targetSdk = 33
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.1.0-b01"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -41,7 +41,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.3.2"
+        kotlinCompilerExtensionVersion = "1.4.3"
     }
     packagingOptions {
         resources {
@@ -65,13 +65,15 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging-ktx")
     implementation("com.google.firebase:firebase-storage-ktx")
     implementation("androidx.compose.material:material-icons-extended")
-    implementation("androidx.compose.material:material")
+    implementation("androidx.compose.material3:material3-android:1.1.0-beta02")
+    implementation("androidx.compose.material:material:1.4.2")
     implementation(libs.play.services.location)
     implementation(libs.accompanist.permissions)
     implementation(libs.map.sdk)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.google.services)
+    implementation(libs.accompanist.webview)
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
@@ -80,7 +82,6 @@ dependencies {
     implementation(libs.ui)
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
-    implementation(libs.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)

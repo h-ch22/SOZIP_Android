@@ -8,6 +8,7 @@ import com.eje.sozip.ui.theme.SOZIP_BG_3
 import com.eje.sozip.ui.theme.SOZIP_BG_4
 import com.eje.sozip.ui.theme.SOZIP_BG_5
 import com.eje.sozip.userManagement.models.AuthResultModel
+import com.eje.sozip.userManagement.models.ChangePasswordResultModel
 import com.eje.sozip.userManagement.models.UserInfoModel
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -23,15 +24,38 @@ import java.lang.Exception
 class UserManagement {
     companion object{
         var userInfo : UserInfoModel? = null
+        var accountInfo : MutableList<String>? = null
 
         fun convertProfileToEmoji(profile : String) : String{
             when(profile){
-                "chick" -> return "🐥"
-                "pig" -> return "🐷"
-                "rabbit" -> return "🐰"
-                "tiger" -> return "🐯"
-                "monkey" -> return "🐵"
-                else -> return "🐥"
+                "chick" -> return "\uD83D\uDC25"
+                "pig" -> return "\uD83D\uDC37"
+                "rabbit" -> return "\uD83D\uDC30"
+                "tiger" -> return "\uD83D\uDC2F"
+                "monkey" -> return "\uD83D\uDC35"
+                else -> return "\uD83D\uDC25"
+            }
+        }
+
+        fun convertEmojiToProfile(emoji : String) : String{
+            when(emoji){
+                "\uD83D\uDC25" -> return "chick"
+                "\uD83D\uDC37" -> return "pig"
+                "\uD83D\uDC30" -> return "rabbit"
+                "\uD83D\uDC2F" -> return "tiger"
+                "\uD83D\uDC35" -> return "monkey"
+                else -> return "chick"
+            }
+        }
+
+        fun convertColorToProfileBG(color : Color) : String{
+            when(color){
+                SOZIP_BG_1 -> return "bg_1"
+                SOZIP_BG_2 -> return "bg_2"
+                SOZIP_BG_3 -> return "bg_3"
+                SOZIP_BG_4 -> return "bg_4"
+                SOZIP_BG_5 -> return "bg_5"
+                else -> return "bg_3"
             }
         }
 
@@ -121,8 +145,15 @@ class UserManagement {
             if(it.isSuccessful){
                 getUserData {
                     if(it){
-                        completion(true)
-                        return@getUserData
+                        getAccountInfo {
+                            if(it){
+                                completion(true)
+                                return@getAccountInfo
+                            } else{
+                                completion(true)
+                                return@getAccountInfo
+                            }
+                        }
                     } else{
                         auth.signOut()
                         completion(false)
@@ -159,6 +190,186 @@ class UserManagement {
                 }
             }
         }.addOnFailureListener {
+            it.printStackTrace()
+            completion(false)
+            return@addOnFailureListener
+        }
+    }
+
+    fun getAccountInfo(completion: (Boolean) -> Unit){
+        db.collection("Users").document(auth.currentUser?.uid ?: "").get().addOnCompleteListener {
+            if(it.isSuccessful){
+                val document = it.result
+
+                if(document.exists()){
+                    val accounts = document.get("bankAccount") as? List<*>
+
+                    if(accounts != null){
+                        accountInfo = accounts as MutableList<String>
+                    } else{
+                        accountInfo = mutableListOf()
+                    }
+
+                    completion(true)
+                    return@addOnCompleteListener
+                }
+            } else{
+                completion(false)
+                return@addOnCompleteListener
+            }
+        }.addOnFailureListener {
+            it.printStackTrace()
+            completion(false)
+            return@addOnFailureListener
+        }
+    }
+
+    fun getMarketingInfo(completion: (Boolean) -> Unit){
+        db.collection("Users").document(auth.currentUser?.uid ?: "").get().addOnCompleteListener {
+            if(it.isSuccessful){
+                val document = it.result
+
+                if(document.exists()){
+                    completion(document.get("marketingAccept") as? Boolean ?: false)
+                    return@addOnCompleteListener
+                }
+            }
+        }.addOnFailureListener {
+            it.printStackTrace()
+            completion(false)
+            return@addOnFailureListener
+        }
+    }
+
+    fun updateMarketingInfo(isAccept : Boolean, completion: (Boolean) -> Unit){
+        db.collection("Users").document(auth.currentUser?.uid ?: "").update(mapOf("marketingAccept" to isAccept)).addOnCompleteListener {
+            if(it.isSuccessful){
+                completion(true)
+                return@addOnCompleteListener
+            }
+        }.addOnFailureListener {
+            it.printStackTrace()
+            completion(false)
+            return@addOnFailureListener
+        }
+    }
+
+    fun updateProfile(nickName : String, profile : String, profile_bg : String, completion: (Boolean) -> Unit){
+        db.collection("Users").document(auth.currentUser?.uid ?: "").update(mapOf(
+            "nickName" to AES256Util.encrypt(nickName),
+            "profile" to profile,
+            "profile_bg" to profile_bg
+        )).addOnCompleteListener {
+            if(it.isSuccessful){
+                getUserData {
+                    completion(true)
+                    return@getUserData
+                }
+            } else{
+                completion(false)
+                return@addOnCompleteListener
+            }
+        }.addOnFailureListener {
+            it.printStackTrace()
+            completion(false)
+            return@addOnFailureListener
+        }
+    }
+
+    fun updatePassword(password : String, currentPassword : String, completion: (ChangePasswordResultModel) -> Unit){
+
+        auth.signInWithEmailAndPassword(auth.currentUser?.email ?: "", currentPassword).addOnFailureListener {
+            it.printStackTrace()
+            completion(ChangePasswordResultModel.PASSWORD_DOES_NOT_MATCH)
+            return@addOnFailureListener
+        }.addOnCompleteListener {
+            if(it.isSuccessful){
+                auth.currentUser?.updatePassword(password)?.addOnCompleteListener {
+                    if(it.isSuccessful){
+                        try{
+                            auth.signOut()
+                            completion(ChangePasswordResultModel.SUCCESS)
+                            return@addOnCompleteListener
+
+                        } catch(e : Exception){
+                            e.printStackTrace()
+                            completion(ChangePasswordResultModel.ERROR)
+                        }
+                    }else{
+                        completion(ChangePasswordResultModel.ERROR)
+                        return@addOnCompleteListener
+                    }
+                }?.addOnFailureListener {
+                    it.printStackTrace()
+                    completion(ChangePasswordResultModel.ERROR)
+                    return@addOnFailureListener
+                }
+            } else{
+                completion(ChangePasswordResultModel.PASSWORD_DOES_NOT_MATCH)
+                return@addOnCompleteListener
+            }
+        }
+    }
+
+    fun updatePhone(phone : String, completion: (Boolean) -> Unit){
+        db.collection("Users").document(auth.currentUser?.uid ?: "").update(mapOf(
+            "phone" to phone
+        )).addOnCompleteListener {
+            if(it.isSuccessful){
+                getUserData {
+                    if(it){
+                        completion(true)
+                        return@getUserData
+                    } else{
+                        completion(true)
+                        return@getUserData
+                    }
+                }
+            } else{
+                completion(false)
+                return@addOnCompleteListener
+            }
+        }.addOnFailureListener {
+            completion(false)
+            return@addOnFailureListener
+        }
+    }
+
+    fun signOut(completion: (Boolean) -> Unit){
+        try{
+            auth.signOut()
+            completion(true)
+        } catch(e : Exception){
+            e.printStackTrace()
+            completion(false)
+            return
+        }
+    }
+
+    fun secession(completion: (Boolean) -> Unit){
+        val uid = auth.currentUser?.uid ?: ""
+
+        auth.currentUser?.delete()?.addOnCompleteListener {
+            if(it.isSuccessful){
+                db.collection("Users").document(uid).delete().addOnCompleteListener {
+                    if(it.isSuccessful){
+                        completion(true)
+                        return@addOnCompleteListener
+                    } else{
+                        completion(false)
+                        return@addOnCompleteListener
+                    }
+                }.addOnFailureListener {
+                    it.printStackTrace()
+                    completion(false)
+                    return@addOnFailureListener
+                }
+
+            } else{
+                completion(false)
+                return@addOnCompleteListener
+            }
+        }?.addOnFailureListener {
             it.printStackTrace()
             completion(false)
             return@addOnFailureListener

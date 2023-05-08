@@ -33,6 +33,8 @@ import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -125,7 +127,7 @@ fun SignUpView(){
                 ){
                     Scaffold(topBar = {
                         androidx.compose.material3.TopAppBar(
-                            title = { androidx.compose.material.Text(text = "회원가입") },
+                            title = { androidx.compose.material.Text(text = "회원가입", color = SOZIPColorPalette.current.txtColor) },
                             navigationIcon = {
                                 IconButton(onClick = { /*TODO*/ }) {
                                     androidx.compose.material.Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null, tint = accent)
@@ -161,12 +163,10 @@ fun SignUpView(){
 
                                 AnimatedVisibility(visible = showView.value){
 
-                                    TextField(
+                                    OutlinedTextField(
+                                        modifier = Modifier.fillMaxWidth(),
                                         value = name.value,
                                         onValueChange = { textVal : String -> name.value = textVal },
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .shadow(5.dp),
                                         label = { Text("이름") },
                                         placeholder = { Text("이름") } ,
                                         leadingIcon = {
@@ -175,20 +175,18 @@ fun SignUpView(){
                                                 contentDescription = null
                                             )
                                         },
-                                        colors = TextFieldDefaults.textFieldColors(
+                                        colors = OutlinedTextFieldDefaults.colors(
                                             cursorColor = accent,
+                                            focusedBorderColor = accent,
                                             errorCursorColor = red,
                                             errorLeadingIconColor = red,
                                             disabledPlaceholderColor = gray,
-                                            focusedIndicatorColor = accent,
+                                            focusedTextColor = accent,
                                             focusedLabelColor = accent,
                                             focusedLeadingIconColor = accent,
-                                            textColor = accent,
                                             disabledTextColor = gray,
-                                            containerColor = SOZIPColorPalette.current.btnColor,
                                             unfocusedLabelColor = SOZIPColorPalette.current.txtColor,
                                             unfocusedLeadingIconColor = SOZIPColorPalette.current.txtColor,
-                                            unfocusedIndicatorColor = SOZIPColorPalette.current.txtColor,
                                             unfocusedSupportingTextColor = SOZIPColorPalette.current.txtColor,
                                             selectionColors = TextSelectionColors(handleColor = accent, backgroundColor = accent.copy(alpha = 0.5f))
                                         ),
@@ -202,12 +200,10 @@ fun SignUpView(){
                                 AnimatedVisibility(visible = name.value != ""){
                                     title.value = "닉네임을 입력해주세요."
 
-                                    TextField(
+                                    OutlinedTextField(
+                                        modifier = Modifier.fillMaxWidth(),
                                         value = nickName.value,
                                         onValueChange = { textVal : String -> nickName.value = textVal },
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .shadow(5.dp),
                                         label = { Text("닉네임") },
                                         placeholder = { Text("닉네임") } ,
                                         leadingIcon = {
@@ -216,20 +212,18 @@ fun SignUpView(){
                                                 contentDescription = null
                                             )
                                         },
-                                        colors = TextFieldDefaults.textFieldColors(
+                                        colors = OutlinedTextFieldDefaults.colors(
                                             cursorColor = accent,
+                                            focusedBorderColor = accent,
                                             errorCursorColor = red,
                                             errorLeadingIconColor = red,
                                             disabledPlaceholderColor = gray,
-                                            focusedIndicatorColor = accent,
+                                            focusedTextColor = accent,
                                             focusedLabelColor = accent,
                                             focusedLeadingIconColor = accent,
-                                            textColor = accent,
                                             disabledTextColor = gray,
-                                            containerColor = SOZIPColorPalette.current.btnColor,
                                             unfocusedLabelColor = SOZIPColorPalette.current.txtColor,
                                             unfocusedLeadingIconColor = SOZIPColorPalette.current.txtColor,
-                                            unfocusedIndicatorColor = SOZIPColorPalette.current.txtColor,
                                             unfocusedSupportingTextColor = SOZIPColorPalette.current.txtColor,
                                             selectionColors = TextSelectionColors(handleColor = accent, backgroundColor = accent.copy(alpha = 0.5f))
                                         ),
@@ -243,12 +237,10 @@ fun SignUpView(){
                                 AnimatedVisibility(visible = nickName.value != ""){
                                     title.value = "휴대폰 번호를 입력해주세요."
 
-                                    TextField(
+                                    OutlinedTextField(
+                                        modifier = Modifier.fillMaxWidth(),
                                         value = phoneNumber.value,
                                         onValueChange = { textVal : String -> phoneNumber.value = textVal },
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .shadow(5.dp),
                                         label = { Text("휴대폰 번호") },
                                         placeholder = { Text("휴대폰 번호") } ,
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
@@ -258,20 +250,18 @@ fun SignUpView(){
                                                 contentDescription = null
                                             )
                                         },
-                                        colors = TextFieldDefaults.textFieldColors(
+                                        colors = OutlinedTextFieldDefaults.colors(
                                             cursorColor = accent,
+                                            focusedBorderColor = accent,
                                             errorCursorColor = red,
                                             errorLeadingIconColor = red,
                                             disabledPlaceholderColor = gray,
-                                            focusedIndicatorColor = accent,
+                                            focusedTextColor = accent,
                                             focusedLabelColor = accent,
                                             focusedLeadingIconColor = accent,
-                                            textColor = accent,
                                             disabledTextColor = gray,
-                                            containerColor = SOZIPColorPalette.current.btnColor,
                                             unfocusedLabelColor = SOZIPColorPalette.current.txtColor,
                                             unfocusedLeadingIconColor = SOZIPColorPalette.current.txtColor,
-                                            unfocusedIndicatorColor = SOZIPColorPalette.current.txtColor,
                                             unfocusedSupportingTextColor = SOZIPColorPalette.current.txtColor,
                                             selectionColors = TextSelectionColors(handleColor = accent, backgroundColor = accent.copy(alpha = 0.5f))
                                         ),
@@ -285,12 +275,10 @@ fun SignUpView(){
                                 AnimatedVisibility(visible = phoneNumber.value != "") {
                                     title.value = "학번을 입력해주세요."
 
-                                    TextField(
+                                    OutlinedTextField(
+                                        modifier = Modifier.fillMaxWidth(),
                                         value = studentNo.value,
                                         onValueChange = { textVal : String -> studentNo.value = textVal },
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .shadow(5.dp),
                                         label = { Text("학번") },
                                         placeholder = { Text("학번") } ,
                                         leadingIcon = {
@@ -299,20 +287,18 @@ fun SignUpView(){
                                                 contentDescription = null
                                             )
                                         },
-                                        colors = TextFieldDefaults.textFieldColors(
+                                        colors = OutlinedTextFieldDefaults.colors(
                                             cursorColor = accent,
+                                            focusedBorderColor = accent,
                                             errorCursorColor = red,
                                             errorLeadingIconColor = red,
                                             disabledPlaceholderColor = gray,
-                                            focusedIndicatorColor = accent,
+                                            focusedTextColor = accent,
                                             focusedLabelColor = accent,
                                             focusedLeadingIconColor = accent,
-                                            textColor = accent,
                                             disabledTextColor = gray,
-                                            containerColor = SOZIPColorPalette.current.btnColor,
                                             unfocusedLabelColor = SOZIPColorPalette.current.txtColor,
                                             unfocusedLeadingIconColor = SOZIPColorPalette.current.txtColor,
-                                            unfocusedIndicatorColor = SOZIPColorPalette.current.txtColor,
                                             unfocusedSupportingTextColor = SOZIPColorPalette.current.txtColor,
                                             selectionColors = TextSelectionColors(handleColor = accent, backgroundColor = accent.copy(alpha = 0.5f))
                                         ),

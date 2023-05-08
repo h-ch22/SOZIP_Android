@@ -40,7 +40,7 @@ fun SearchBar(
     state : MutableState<TextFieldValue>,
     placeHolder : String
 ){
-    TextField(
+    OutlinedTextField(
         value = state.value,
         onValueChange = {
             state.value = it
@@ -56,7 +56,7 @@ fun SearchBar(
             focusedIndicatorColor = Color.Transparent,
             focusedLabelColor = accent,
             focusedLeadingIconColor = gray,
-            textColor = SOZIPColorPalette.current.txtColor,
+//            textColor = SOZIPColorPalette.current.txtColor,
             disabledTextColor = gray,
             containerColor = gray.copy(alpha = 0.5f),
             unfocusedLabelColor = gray,

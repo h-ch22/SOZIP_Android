@@ -2,6 +2,8 @@ package com.eje.sozip.userManagement.ui
 
 import android.content.Intent
 import android.util.Log
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,6 +29,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -38,6 +42,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -175,12 +180,10 @@ fun SignInView(){
                         Spacer(modifier = Modifier.height(20.dp))
 
 
-                        TextField(
+                        OutlinedTextField(
+                            modifier = Modifier.fillMaxWidth(),
                             value = email.value,
                             onValueChange = { textVal : String -> email.value = textVal },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .shadow(5.dp),
                             label = { Text("E-Mail") },
                             placeholder = { Text("E-Mail") } ,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
@@ -190,20 +193,18 @@ fun SignInView(){
                                     contentDescription = null
                                 )
                             },
-                            colors = TextFieldDefaults.textFieldColors(
+                            colors = OutlinedTextFieldDefaults.colors(
                                 cursorColor = accent,
+                                focusedBorderColor = accent,
                                 errorCursorColor = red,
                                 errorLeadingIconColor = red,
                                 disabledPlaceholderColor = gray,
-                                focusedIndicatorColor = accent,
+                                focusedTextColor = accent,
                                 focusedLabelColor = accent,
                                 focusedLeadingIconColor = accent,
-                                textColor = accent,
                                 disabledTextColor = gray,
-                                containerColor = SOZIPColorPalette.current.btnColor,
                                 unfocusedLabelColor = SOZIPColorPalette.current.txtColor,
                                 unfocusedLeadingIconColor = SOZIPColorPalette.current.txtColor,
-                                unfocusedIndicatorColor = SOZIPColorPalette.current.txtColor,
                                 unfocusedSupportingTextColor = SOZIPColorPalette.current.txtColor,
                                 selectionColors = TextSelectionColors(handleColor = accent, backgroundColor = accent.copy(alpha = 0.5f))
                             ),
@@ -214,12 +215,10 @@ fun SignInView(){
                         Spacer(modifier = Modifier.height(20.dp))
 
 
-                        TextField(
+                        OutlinedTextField(
+                            modifier = Modifier.fillMaxWidth(),
                             value = password.value,
                             onValueChange = { textVal : String -> password.value = textVal },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .shadow(5.dp),
                             label = { Text("비밀번호") },
                             placeholder = { Text("비밀번호") } ,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -229,20 +228,18 @@ fun SignInView(){
                                     contentDescription = null
                                 )
                             },
-                            colors = TextFieldDefaults.textFieldColors(
+                            colors = OutlinedTextFieldDefaults.colors(
                                 cursorColor = accent,
+                                focusedBorderColor = accent,
                                 errorCursorColor = red,
                                 errorLeadingIconColor = red,
                                 disabledPlaceholderColor = gray,
-                                focusedIndicatorColor = accent,
+                                focusedTextColor = accent,
                                 focusedLabelColor = accent,
                                 focusedLeadingIconColor = accent,
-                                textColor = accent,
                                 disabledTextColor = gray,
-                                containerColor = SOZIPColorPalette.current.btnColor,
                                 unfocusedLabelColor = SOZIPColorPalette.current.txtColor,
                                 unfocusedLeadingIconColor = SOZIPColorPalette.current.txtColor,
-                                unfocusedIndicatorColor = SOZIPColorPalette.current.txtColor,
                                 unfocusedSupportingTextColor = SOZIPColorPalette.current.txtColor,
                                 selectionColors = TextSelectionColors(handleColor = accent, backgroundColor = accent.copy(alpha = 0.5f))
 
