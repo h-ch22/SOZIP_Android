@@ -19,6 +19,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import java.lang.Exception
 
 class UserManagement {
@@ -185,8 +186,16 @@ class UserManagement {
                                             profile = document.get("profile") as? String ?: "",
                                             profile_bg = document.get("profile_bg") as? String ?: "")
                     
-                    completion(true)
-                    return@addOnCompleteListener
+
+                    updateToken{
+                        if(it){
+                            completion(true)
+                            return@updateToken
+                        } else{
+                            completion(true)
+                            return@updateToken
+                        }
+                    }
                 }
             }
         }.addOnFailureListener {
@@ -239,6 +248,34 @@ class UserManagement {
             completion(false)
             return@addOnFailureListener
         }
+    }
+
+    private fun getFCMToken(completion: (String?) -> Unit){
+        FirebaseMessaging.getInstance().token.addOnCompleteListener {
+            completion(it.result)
+        }.addOnFailureListener {
+            it.printStackTrace()
+            return@addOnFailureListener
+        }
+    }
+
+    private fun updateToken(completion: (Boolean) -> Unit){
+        getFCMToken {
+            if(it != null){
+                db.collection("Users").document(auth.currentUser?.uid ?: "").update(mapOf(
+                    "token" to it
+                )).addOnCompleteListener {
+                    if(it.isSuccessful){
+                        completion(true)
+                        return@addOnCompleteListener
+                    } else{
+                        completion(false)
+                        return@addOnCompleteListener
+                    }
+                }
+            }
+        }
+
     }
 
     fun updateMarketingInfo(isAccept : Boolean, completion: (Boolean) -> Unit){

@@ -1,5 +1,9 @@
 package com.eje.sozip.frameworks.ui
 
+import android.Manifest
+import android.app.NotificationManager
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -31,7 +35,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
@@ -40,6 +47,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -49,9 +57,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.navigation.NavController
 import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
@@ -113,6 +126,12 @@ fun MainScreenView(){
         skipHalfExpanded = true
     )
 
+    val context = LocalContext.current
+    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val showNotificationPermissionDialog = remember{
+        mutableStateOf(false)
+    }
+
 
     BackHandler {
         if(modalSheetState.isVisible){
@@ -164,6 +183,13 @@ fun MainScreenView(){
                 )
             }}
     ) {
+        LaunchedEffect(key1 = true){
+            val notificationPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
+
+            if(notificationPermission != PackageManager.PERMISSION_GRANTED){
+                showNotificationPermissionDialog.value = true
+            }
+        }
         Box(modifier = Modifier.padding(it)){
             NavigationGraph(navController = navController)
         }
@@ -195,6 +221,30 @@ fun MainScreenView(){
             sheetShape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp)
         ) {
 
+        }
+
+        if(showNotificationPermissionDialog.value){
+            AlertDialog(
+                onDismissRequest = { showNotificationPermissionDialog.value = false },
+
+                confirmButton = {
+                    TextButton(onClick = {
+                        showNotificationPermissionDialog.value = false
+                        ActivityCompat.requestPermissions(context as MainActivity, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1000)
+                    }){
+                        Text("확인", color = accent, fontWeight = FontWeight.Bold)
+                    }
+                },
+                title = {
+                    Text("권한 상승 필요")
+                },
+                text = {
+                    Text("소집, 채팅 알림을 표시하기 위해 알림 권한이 필요합니다.")
+                },
+                icon = {
+                    Icon(imageVector = Icons.Default.Notifications, contentDescription = null)
+                }
+            )
         }
     }
 }

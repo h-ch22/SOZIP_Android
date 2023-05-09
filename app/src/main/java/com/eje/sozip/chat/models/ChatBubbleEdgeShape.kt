@@ -13,20 +13,11 @@ class ChatBubbleEdgeShape(val offset: Int, val isMyMsg : Boolean) : Shape {
         layoutDirection: LayoutDirection,
         density: Density
     ): Outline {
-        if(isMyMsg){
-            val trianglePath = Path().apply {
-                moveTo(x = 0f, y = size.height-offset)
-                lineTo(x = 0f, y = size.height)
-                lineTo(x = 0f + offset, y = size.height)
-            }
-            return Outline.Generic(path = trianglePath)
-        } else{
-            val trianglePath = Path().apply {
-                moveTo(x = 0f, y = size.height-offset)
-                lineTo(x = 0f, y = size.height)
-                lineTo(x = 0f + offset, y = size.height)
-            }
-            return Outline.Generic(path = trianglePath)
+        val trianglePath = Path().apply {
+            moveTo(x = 0f, y = size.height-offset)
+            lineTo(x = 0f, y = size.height)
+            lineTo(x = 0f + offset, y = size.height)
         }
+        return Outline.Generic(path = trianglePath)
     }
 }

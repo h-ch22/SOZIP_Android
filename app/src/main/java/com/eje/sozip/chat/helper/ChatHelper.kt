@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.graphics.Color
 import com.eje.sozip.chat.models.ChatContentsDataModel
 import com.eje.sozip.chat.models.ChatListDataModel
+import com.eje.sozip.frameworks.helper.AES256Util
 import com.eje.sozip.ui.theme.SOZIP_BG_1
 import com.eje.sozip.ui.theme.SOZIP_BG_2
 import com.eje.sozip.ui.theme.SOZIP_BG_3
@@ -16,6 +17,8 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class ChatHelper {
     private val auth = Firebase.auth
@@ -143,7 +146,7 @@ class ChatHelper {
                             val msg = diff.document.get("msg") as? String ?: ""
                             val msg_type = diff.document.get("msg_type") as? String ?: ""
                             val sender = diff.document.get("sender") as? String ?: ""
-                            val unread = diff.document.get("unread") as List<String>
+                            val unread = diff.document.get("unread") as? List<String>
                             val rootDocId = data.docId
                             val docId = diff.document.id
                             val imgIndex = diff.document.get("imageIndex") as? Long
@@ -161,7 +164,7 @@ class ChatHelper {
                                     it.docId == docId
                                 }.isEmpty()){
                                 chatContents.add(
-                                    ChatContentsDataModel(rootDocId, docId, msg, sender, unread.size, date, msg_type, imgIndex?.toInt(), profile, profile_BG, data.participants.get(sender) ?: "", url, account)
+                                    ChatContentsDataModel(rootDocId, docId, msg, sender, unread?.size ?: 0, date, msg_type, imgIndex?.toInt(), profile, profile_BG, data.participants.get(sender) ?: "", url, account)
                                 )
                             }
                             else{
@@ -173,7 +176,7 @@ class ChatHelper {
                                     rootDocId = rootDocId,
                                     msg = msg,
                                     sender = sender,
-                                    unread = unread.size,
+                                    unread = unread?.size ?: 0,
                                     time = date,
                                     type = msg_type,
                                     imgIndex = imgIndex?.toInt(),
@@ -192,6 +195,28 @@ class ChatHelper {
                     }
                 }
             }
+        }
+    }
+
+    fun sendPlainText(rootDocId : String, msg : String, completion: (Boolean) -> Unit){
+        val chatRef = db.collection("SOZIP").document(rootDocId).collection("Chat")
+        val formatter = SimpleDateFormat("yy/MM/dd kk:mm:ss.SSSS")
+
+        chatRef.document().set(mapOf(
+            "date" to formatter.format(Date()),
+            "msg" to AES256Util.encrypt(msg),
+            "msg_type" to "text",
+            "sender" to UserManagement.userInfo?.uid,
+            "unread" to emptyList<String>()
+        )).addOnCompleteListener {
+            if(it.isSuccessful){
+                completion(true)
+                return@addOnCompleteListener
+            }
+        }.addOnFailureListener {
+            it.printStackTrace()
+            completion(false)
+            return@addOnFailureListener
         }
     }
 }

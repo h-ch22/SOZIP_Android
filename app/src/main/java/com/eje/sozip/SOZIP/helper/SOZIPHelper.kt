@@ -149,6 +149,74 @@ class SOZIPHelper {
         }
     }
 
+    fun getSpecificSOZIP(id : String, completion : (SOZIPDataModel?) -> Unit){
+        db.collection("SOZIP").document(id).get().addOnCompleteListener {
+            if(it.isSuccessful){
+                val document = it.result
+
+                val address = document.get("address") as? String ?: ""
+                val date = document.get("dateTime") as com.google.firebase.Timestamp
+                val description = document.get("description") as? String ?: ""
+                val location = document.get("location") as? String ?: ""
+                val name = document.get("name") as? String ?: ""
+                val category = document.get("category") as? String ?: ""
+                val firstCome = document.get("firstCome") as? Long ?: 4
+                val currentPeople = document.get("currentPeople") as? Long ?: 1
+                val participants = document.get("participants") as? Map<String, String> ?: mapOf()
+                val Manager = document.get("Manager") as? String ?: ""
+                val status = document.get("status") as? String ?: ""
+
+                val dateFormat = SimpleDateFormat("yyyy. MM. dd. HH:mm:ss")
+                val dateAsDate = date.toDate()
+                val dateAsString = dateFormat.format(dateAsDate)
+                val dateTime = dateFormat.parse(dateAsString)
+                val color = document.get("color") as? String ?: "bg_1"
+                val account = document.get("account") as? String ?: ""
+                val profile = document.get("profiles") as? Map<String, String> ?: mapOf()
+                var colorCode = SOZIP_BG_1
+                val url = document.get("url") as? String ?: ""
+                val type = document.get("type") as? String ?: "DELIVERY"
+
+                when(color){
+                    "bg_1" -> colorCode = SOZIP_BG_1
+                    "bg_2" -> colorCode = SOZIP_BG_2
+                    "bg_3" -> colorCode = SOZIP_BG_3
+                    "bg_4" -> colorCode = SOZIP_BG_4
+                    "bg_5" -> colorCode = SOZIP_BG_5
+                    else -> colorCode = SOZIP_BG_1
+                }
+
+                completion(
+                    SOZIPDataModel(
+                        id,
+                        category,
+                        (firstCome + 1).toInt(),
+                        AES256Util.decrypt(name),
+                        currentPeople.toInt(),
+                        AES256Util.decrypt(description),
+                        dateTime,
+                        Manager,
+                        participants,
+                        AES256Util.decrypt(location),
+                        AES256Util.decrypt(address),
+                        status,
+                        colorCode,
+                        account,
+                        profile,
+                        url,
+                        if(type == "DELIVERY") SOZIPPackagingTypeModel.DELIVERY else SOZIPPackagingTypeModel.TAKE_OUT
+                    )
+                )
+            } else{
+                completion(null)
+            }
+        }.addOnFailureListener {
+            it.printStackTrace()
+            completion(null)
+            return@addOnFailureListener
+        }
+    }
+
     fun addSOZIP(SOZIPName : String,
                  location : String,
                  address : String,
@@ -187,7 +255,7 @@ class SOZIPHelper {
                 "category" to category,
                 "firstCome" to firstCome,
                 "Manager" to UserManagement.userInfo?.uid,
-                "participants" to mapOf(UserManagement.userInfo?.uid to UserManagement.userInfo?.nickName),
+                "participants" to mapOf(UserManagement.userInfo?.uid to AES256Util.decrypt(UserManagement.userInfo?.nickName)),
                 "payMethod" to mapOf(UserManagement.userInfo?.uid to ""),
                 "transactionMethod" to mapOf(UserManagement.userInfo?.uid to ""),
                 "last_msg" to AES256Util.encrypt("소집이 시작되었어요!"),
@@ -248,7 +316,7 @@ class SOZIPHelper {
                     }
 
                     SOZIPRef.update(mapOf(
-                        "participants.${UserManagement.userInfo?.uid}" to UserManagement.userInfo?.nickName,
+                        "participants.${UserManagement.userInfo?.uid}" to AES256Util.decrypt(UserManagement.userInfo?.nickName),
                         "profiles.${UserManagement.userInfo?.uid}" to "${UserManagement.userInfo?.profile},${UserManagement.userInfo?.profile_bg}"
                     )).addOnCompleteListener {
                         if(it.isSuccessful){
