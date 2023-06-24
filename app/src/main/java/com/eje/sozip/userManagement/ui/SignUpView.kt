@@ -389,7 +389,7 @@ fun SignUpView(){
                                         ),
                                         elevation = ButtonDefaults.buttonElevation(5.dp, disabledElevation = 5.dp)
                                     ) {
-                                        Row{
+                                        Row(verticalAlignment = Alignment.CenterVertically){
                                             Text("다음 단계로", color = white)
                                             Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null, tint = white)
                                         }

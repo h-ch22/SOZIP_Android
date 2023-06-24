@@ -7,6 +7,7 @@ import com.eje.sozip.ui.theme.SOZIP_BG_2
 import com.eje.sozip.ui.theme.SOZIP_BG_3
 import com.eje.sozip.ui.theme.SOZIP_BG_4
 import com.eje.sozip.ui.theme.SOZIP_BG_5
+import com.eje.sozip.userManagement.models.AccountDataModel
 import com.eje.sozip.userManagement.models.AuthResultModel
 import com.eje.sozip.userManagement.models.ChangePasswordResultModel
 import com.eje.sozip.userManagement.models.UserInfoModel
@@ -16,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -25,7 +27,7 @@ import java.lang.Exception
 class UserManagement {
     companion object{
         var userInfo : UserInfoModel? = null
-        var accountInfo : MutableList<String>? = null
+        var accountInfo : MutableList<AccountDataModel>? = null
 
         fun convertProfileToEmoji(profile : String) : String{
             when(profile){
@@ -205,16 +207,53 @@ class UserManagement {
         }
     }
 
+    fun addAccountInfo(bank: String, accountNumber: String, name: String, completion: (Boolean) -> Unit){
+        if(auth.currentUser?.uid == null){
+            completion(false)
+            return
+        } else{
+            db.collection("Users").document(auth.currentUser?.uid ?: "").update(
+                "bankAccount", FieldValue.arrayUnion("${AES256Util.encrypt(bank)} ${AES256Util.encrypt(accountNumber)} ${AES256Util.encrypt(name)}")
+            ).addOnCompleteListener {
+                if(it.isSuccessful){
+                    completion(true)
+                    return@addOnCompleteListener
+                } else{
+                    completion(false)
+                    return@addOnCompleteListener
+                }
+            }.addOnFailureListener{
+                it.printStackTrace()
+                completion(false)
+                return@addOnFailureListener
+            }
+        }
+    }
+
     fun getAccountInfo(completion: (Boolean) -> Unit){
         db.collection("Users").document(auth.currentUser?.uid ?: "").get().addOnCompleteListener {
             if(it.isSuccessful){
                 val document = it.result
 
                 if(document.exists()){
-                    val accounts = document.get("bankAccount") as? List<*>
+                    val account = document.get("bankAccount") as? List<String>
+                    val accounts = mutableListOf<AccountDataModel>()
 
-                    if(accounts != null){
-                        accountInfo = accounts as MutableList<String>
+                    if(account != null && account.size > 0){
+                        for(acc in account){
+                            val acc_decrypted = AES256Util.decrypt(acc)
+
+                            accounts.add(
+                                AccountDataModel(
+                                    bank = acc_decrypted.split(" ")[0],
+                                    accountNumber = acc_decrypted.split(" ")[1],
+                                    name = acc_decrypted.split(" ")[2]
+                                )
+                            )
+                        }
+
+                        accountInfo = accounts
+
                     } else{
                         accountInfo = mutableListOf()
                     }
@@ -230,6 +269,29 @@ class UserManagement {
             it.printStackTrace()
             completion(false)
             return@addOnFailureListener
+        }
+    }
+
+    fun removeAccount(account: String, completion: (Boolean) -> Unit){
+        if(auth.currentUser?.uid == null){
+            completion(false)
+            return
+        } else{
+            db.collection("Users").document(auth.currentUser?.uid ?: "").update(
+                "bankAccount", FieldValue.arrayRemove(account)
+            ).addOnCompleteListener {
+                if(it.isSuccessful){
+                    completion(true)
+                    return@addOnCompleteListener
+                } else{
+                    completion(false)
+                    return@addOnCompleteListener
+                }
+            }.addOnFailureListener{
+                it.printStackTrace()
+                completion(false)
+                return@addOnFailureListener
+            }
         }
     }
 

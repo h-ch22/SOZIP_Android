@@ -34,6 +34,7 @@ import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Money
@@ -140,6 +141,10 @@ fun EditProfileView() {
 
             composable("UpdatePhoneView"){
                 UpdatePhoneView()
+            }
+
+            composable("AccountManagementView"){
+                AccountManagementView(false)
             }
 
             composable(route = "EditProfileView"){
@@ -357,7 +362,11 @@ fun EditProfileView() {
                                 Spacer(modifier = Modifier.height(10.dp))
 
                                 Button(onClick = {
-
+                                    navController.navigate("AccountManagementView"){
+                                        popUpTo("EditProfileView"){
+                                            inclusive = false
+                                        }
+                                    }
                                 },
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = SOZIPColorPalette.current.btnColor
@@ -369,7 +378,7 @@ fun EditProfileView() {
                                     contentPadding = PaddingValues(start = 15.dp)
                                 ) {
                                     Row(horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(imageVector = Icons.Default.Money, contentDescription = null, tint = SOZIPColorPalette.current.txtColor)
+                                        Icon(imageVector = Icons.Default.CreditCard, contentDescription = null, tint = SOZIPColorPalette.current.txtColor)
                                         Spacer(modifier = Modifier.width(5.dp))
                                         androidx.compose.material3.Text(
                                             "계좌 관리",
@@ -409,7 +418,7 @@ fun EditProfileView() {
                                     ),
                                     elevation = ButtonDefaults.buttonElevation(5.dp, disabledElevation = 5.dp)
                                 ) {
-                                    Row{
+                                    Row(verticalAlignment = Alignment.CenterVertically){
                                         androidx.compose.material3.Text("프로필 변경하기", color = white)
                                         androidx.compose.material3.Icon(
                                             imageVector = Icons.Default.ChevronRight,

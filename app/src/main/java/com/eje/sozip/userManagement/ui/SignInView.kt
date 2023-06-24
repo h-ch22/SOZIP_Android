@@ -5,7 +5,9 @@ import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -27,6 +30,7 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -56,6 +60,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.datastore.core.DataStore
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -274,7 +280,7 @@ fun SignInView(){
                             ),
                             elevation = ButtonDefaults.buttonElevation(5.dp, disabledElevation = 5.dp)
                         ) {
-                            Row{
+                            Row(verticalAlignment = Alignment.CenterVertically){
                                 Text("로그인", color = white)
                                 Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null, tint = white)
                             }
@@ -341,7 +347,22 @@ fun SignInView(){
                     }
 
                     if(showProgress){
-                        ProgressView()
+                        Dialog(
+                            onDismissRequest = { showDialog = false },
+                            DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+                        ) {
+                            Box(
+                                contentAlignment= Alignment.Center,
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .background(
+                                        SOZIPColorPalette.current.background.copy(alpha = 0.7f),
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                            ) {
+                                CircularProgressIndicator(color = accent)
+                            }
+                        }
                     }
 
                     if(signedIn){

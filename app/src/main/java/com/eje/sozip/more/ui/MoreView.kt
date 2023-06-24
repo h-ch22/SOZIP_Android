@@ -55,6 +55,10 @@ fun MoreView(){
                 ProfileView()
             }
 
+            composable(route = "FeedbackHubView"){
+                FeedbackHubView()
+            }
+
             composable(route = "InfoView"){
                 InfoView()
             }
@@ -125,7 +129,13 @@ fun MoreView(){
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        Button(onClick = { /*TODO*/ },
+                        Button(onClick = {
+                            navController.navigate("FeedbackHubView"){
+                                popUpTo("MoreView"){
+                                    inclusive = false
+                                }
+                            }
+                        },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = SOZIPColorPalette.current.btnColor
                             ), elevation = ButtonDefaults.buttonElevation(5.dp),

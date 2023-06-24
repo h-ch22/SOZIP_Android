@@ -1,7 +1,7 @@
 [versions]
 accompanist-permissions = "0.24.13-rc"
 accompanist-systemuicontroller = "0.27.0"
-com-android-application = "8.1.0-beta01"
+com-android-application = "8.1.0-rc01"
 datastore-preferences = "1.0.0"
 firebase-bom = "31.4.0"
 google-firebase-bom = "31.3.0"

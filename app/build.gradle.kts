@@ -67,6 +67,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.material3:material3-android:1.1.0-beta02")
     implementation("androidx.compose.material:material:1.4.2")
+    implementation("com.github.lukasroberts:AndroidLinkView:1.0.1")
     implementation(libs.play.services.location)
     implementation(libs.accompanist.permissions)
     implementation(libs.map.sdk)

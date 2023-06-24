@@ -123,7 +123,7 @@ fun ChatDetailView(SOZIPData : ChatListDataModel){
         mutableStateOf<SOZIPDataModel?>(null)
     }
 
-    var iconList = remember{
+    val iconList = remember{
         mutableStateListOf(
             Icons.Default.PhotoCamera,
             Icons.Default.PhotoLibrary,
@@ -134,13 +134,13 @@ fun ChatDetailView(SOZIPData : ChatListDataModel){
         )
     }
 
-    var titleList = remember{
+    val titleList = remember{
         mutableStateListOf(
             "사진 촬영", "이미지 선택", "계좌 정보 전송", "소집 완료", "소집 취소", "소집 신고"
         )
     }
 
-    var tintList = remember{
+    val tintList = remember{
         mutableStateListOf(
             blue, blue, accent, green, red, red
         )
