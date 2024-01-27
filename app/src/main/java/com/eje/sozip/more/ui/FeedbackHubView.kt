@@ -53,6 +53,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.eje.sozip.R
 import com.eje.sozip.more.models.FeedbackHubTypeModel
 import com.eje.sozip.ui.theme.SOZIPColorPalette
@@ -64,7 +66,7 @@ import com.eje.sozip.ui.theme.white
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FeedbackHubView(){
+fun FeedbackHubView(parent: NavHostController){
     var selectedType by remember{
         mutableStateOf<FeedbackHubTypeModel?>(null)
     }
@@ -84,7 +86,7 @@ fun FeedbackHubView(){
                     Text(text = "피드백 허브", color = SOZIPColorPalette.current.txtColor)
                 },
                 navigationIcon = {
-                    androidx.compose.material.IconButton(onClick = { /*TODO*/ }) {
+                    androidx.compose.material.IconButton(onClick = { parent.popBackStack() }) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null, tint = accent)
                     }
                 },
@@ -94,8 +96,12 @@ fun FeedbackHubView(){
                 )
             )
         }, content = {
-            Surface(modifier = Modifier.fillMaxSize().padding(it), color = SOZIPColorPalette.current.background){
-                Column(modifier=Modifier.padding(it).padding(20.dp), verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
+            Surface(modifier = Modifier
+                .fillMaxSize()
+                .padding(it), color = SOZIPColorPalette.current.background){
+                Column(modifier= Modifier
+                    .padding(it)
+                    .padding(20.dp), verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
                     Image(
                         painter = painterResource(id = R.drawable.bg_feedback_hub),
                         contentDescription = null,
@@ -245,7 +251,7 @@ fun FeedbackHubView(){
                             ),
                             elevation = ButtonDefaults.buttonElevation(5.dp, disabledElevation = 5.dp)
                         ) {
-                            Row(verticalAlignment = Alignment.CenterVertically){
+                            Row{
                                 androidx.compose.material3.Text("피드백 보내기", color = white)
                                 androidx.compose.material3.Icon(
                                     imageVector = Icons.Default.ChevronRight,
@@ -270,5 +276,5 @@ fun FeedbackHubView(){
 @Preview(showBackground = true, device = "id:pixel_7_pro")
 @Composable
 fun FeedbackHubView_previews(){
-    FeedbackHubView()
+    FeedbackHubView(rememberNavController())
 }

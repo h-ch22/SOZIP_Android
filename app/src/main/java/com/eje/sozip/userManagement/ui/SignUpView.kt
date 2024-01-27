@@ -54,6 +54,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -69,7 +70,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignUpView(){
+fun SignUpView(parent: NavHostController){
     val title = remember{
         mutableStateOf("반가워요!")
     }
@@ -129,7 +130,7 @@ fun SignUpView(){
                         androidx.compose.material3.TopAppBar(
                             title = { androidx.compose.material.Text(text = "회원가입", color = SOZIPColorPalette.current.txtColor) },
                             navigationIcon = {
-                                IconButton(onClick = { /*TODO*/ }) {
+                                IconButton(onClick = { parent.popBackStack() }) {
                                     androidx.compose.material.Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null, tint = accent)
                                 }
                             },
@@ -139,7 +140,10 @@ fun SignUpView(){
                             )
                         )
                     }, content = {
-                        Column(modifier = Modifier.fillMaxSize().background(SOZIPColorPalette.current.background).padding(it)) {
+                        Column(modifier = Modifier
+                            .fillMaxSize()
+                            .background(SOZIPColorPalette.current.background)
+                            .padding(it)) {
                             Column(modifier = Modifier
                                 .padding(20.dp)
                                 .verticalScroll(rememberScrollState()),
@@ -389,7 +393,7 @@ fun SignUpView(){
                                         ),
                                         elevation = ButtonDefaults.buttonElevation(5.dp, disabledElevation = 5.dp)
                                     ) {
-                                        Row(verticalAlignment = Alignment.CenterVertically){
+                                        Row{
                                             Text("다음 단계로", color = white)
                                             Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null, tint = white)
                                         }
@@ -410,6 +414,6 @@ fun SignUpView(){
 @Preview
 @Composable
 fun SignUpView_preview(){
-    SignUpView()
+    SignUpView(rememberNavController())
 }
 

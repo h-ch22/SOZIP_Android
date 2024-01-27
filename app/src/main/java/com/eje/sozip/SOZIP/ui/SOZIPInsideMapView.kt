@@ -64,7 +64,6 @@ fun SOZIPInsideMapView(data : SOZIPDataModel, modifier : Modifier){
 
         val lifecycleObserver = remember {
             LifecycleEventObserver { source, event ->
-                // CoroutineScope 안에서 호출해야 정상적으로 동작합니다.
                 coroutineScope.launch {
                     when (event) {
                         Lifecycle.Event.ON_CREATE -> mapView.onCreate(Bundle())

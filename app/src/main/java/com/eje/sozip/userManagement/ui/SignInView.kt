@@ -127,7 +127,7 @@ fun SignInView(){
     SOZIPTheme {
         NavHost(navController = navController, startDestination = "SignInView"){
             composable(route = "SignUpView"){
-                SignUpView()
+                SignUpView(navController)
             }
 
             composable(route = "SignInView"){
@@ -280,7 +280,7 @@ fun SignInView(){
                             ),
                             elevation = ButtonDefaults.buttonElevation(5.dp, disabledElevation = 5.dp)
                         ) {
-                            Row(verticalAlignment = Alignment.CenterVertically){
+                            Row{
                                 Text("로그인", color = white)
                                 Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null, tint = white)
                             }

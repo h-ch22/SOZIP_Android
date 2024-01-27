@@ -28,7 +28,7 @@ import com.eje.sozip.ui.theme.white
 import com.eje.sozip.userManagement.helper.UserManagement
 import java.text.SimpleDateFormat
 
-fun convertTime(time : String) : String{
+fun convertTime(time: String): String {
     val dateFormatter = SimpleDateFormat("yy/MM/dd kk:mm:ss.SSSS")
     val formattedDate = dateFormatter.parse(time)
 
@@ -37,27 +37,33 @@ fun convertTime(time : String) : String{
 }
 
 @Composable
-fun ChatBubbleShape(data : ChatContentsDataModel, SOZIPData : ChatListDataModel, modifier : Modifier) {
+fun ChatBubbleShape(data: ChatContentsDataModel, SOZIPData: ChatListDataModel, modifier: Modifier) {
     val isMyMsg = data.sender == UserManagement.userInfo?.uid
-//    val isMyMsg = false
-    Column(Modifier
-        .fillMaxWidth().wrapContentHeight(), verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
+
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.Start
+    ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            if(!isMyMsg){
+            if (!isMyMsg) {
                 Text(text = UserManagement.convertProfileToEmoji(data.profile), modifier = Modifier
                     .padding(5.dp)
                     .drawBehind {
                         drawCircle(
                             color = data.profile_BG
                         )
-                    }, fontSize = 25.sp)
+                    }, fontSize = 25.sp
+                )
 
                 Text(text = data.nickName, color = gray, fontSize = 10.sp)
             }
         }
 
-        Row(horizontalArrangement = Arrangement.Start) {
-            if(isMyMsg){
+        Row(horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.Bottom) {
+            if (isMyMsg) {
                 Spacer(modifier = Modifier.weight(1f))
 
                 Text(text = convertTime(data.time), color = gray, fontSize = 10.sp)
@@ -65,36 +71,25 @@ fun ChatBubbleShape(data : ChatContentsDataModel, SOZIPData : ChatListDataModel,
                 Spacer(modifier = Modifier.width(5.dp))
             }
 
-            if(data.type == "text"){
+            if (data.type == "text") {
                 Column(
                     modifier = Modifier
                         .background(
                             color = if (isMyMsg) SOZIPData.color else gray,
-                            shape = RoundedCornerShape(4.dp, 4.dp, 0.dp, 4.dp)
+                            shape = RoundedCornerShape(15.dp, 15.dp, 15.dp, 15.dp)
                         )
                         .wrapContentWidth()
                         .padding(5.dp)
                 ) {
                     Text(AES256Util.decrypt(data.msg), color = white)
                 }
-                Column(
-                    modifier = Modifier
-                        .background(
-                            color = if (isMyMsg) SOZIPData.color else gray,
-                            shape = ChatBubbleEdgeShape(10, isMyMsg)
-                        )
-                        .width(8.dp)
-                        .fillMaxHeight()
-                        .padding(5.dp)
-                ) {
-                }
-            } else if(data.type == "participate"){
-                if(isMyMsg){
+            } else if (data.type == "participate") {
+                if (isMyMsg) {
                     Column(
                         modifier = Modifier
                             .background(
                                 color = if (isMyMsg) SOZIPData.color else gray,
-                                shape = RoundedCornerShape(4.dp, 4.dp, 0.dp, 4.dp)
+                                shape = RoundedCornerShape(15.dp, 15.dp, 15.dp, 15.dp)
                             )
                             .wrapContentWidth()
                             .padding(5.dp),
@@ -105,35 +100,12 @@ fun ChatBubbleShape(data : ChatContentsDataModel, SOZIPData : ChatListDataModel,
                         Spacer(Modifier.height(5.dp))
                         Text("메뉴를 결정한 후 정산을 완료해주세요!", fontSize = 10.sp, color = white)
                     }
+                } else {
                     Column(
                         modifier = Modifier
                             .background(
                                 color = if (isMyMsg) SOZIPData.color else gray,
-                                shape = ChatBubbleEdgeShape(10, isMyMsg)
-                            )
-                            .width(8.dp)
-                            .fillMaxHeight()
-                            .padding(5.dp)
-                    ) {
-                    }
-                } else{
-                    Column(
-                        modifier = Modifier
-                            .background(
-                                color = if (isMyMsg) SOZIPData.color else gray,
-                                shape = ChatBubbleEdgeShape(10, isMyMsg)
-                            )
-                            .width(8.dp)
-                            .fillMaxHeight()
-                            .padding(5.dp)
-                    ) {
-                    }
-
-                    Column(
-                        modifier = Modifier
-                            .background(
-                                color = if (isMyMsg) SOZIPData.color else gray,
-                                shape = RoundedCornerShape(4.dp, 4.dp, 0.dp, 4.dp)
+                                shape = RoundedCornerShape(15.dp, 15.dp, 15.dp, 15.dp)
                             )
                             .wrapContentWidth()
                             .padding(5.dp),
@@ -149,7 +121,7 @@ fun ChatBubbleShape(data : ChatContentsDataModel, SOZIPData : ChatListDataModel,
 
             }
 
-            if(!isMyMsg){
+            if (!isMyMsg) {
                 Text(text = convertTime(data.time), color = gray, fontSize = 10.sp)
             }
 
@@ -160,9 +132,35 @@ fun ChatBubbleShape(data : ChatContentsDataModel, SOZIPData : ChatListDataModel,
 
 @Preview
 @Composable
-fun ChatBubbleShape_previews(){
-    ChatBubbleShape(data = ChatContentsDataModel(rootDocId = "", docId = "", msg = "", sender = "", unread = 0, time = "23/05/07 09:41:00.0000", type = "participate", account = null, imgIndex = null, nickName = "Changjin", profile = "chick", profile_BG = SOZIP_BG_3, url = emptyList()),
-        SOZIPData = ChatListDataModel(docId = "", SOZIPName = "", color = SOZIP_BG_3, currentPeople = 0, last_msg_time = "", last_msg = "", manager = "", participants = emptyMap(), profiles = emptyMap(), status = ""),
+fun ChatBubbleShape_previews() {
+    ChatBubbleShape(
+        data = ChatContentsDataModel(
+            rootDocId = "",
+            docId = "",
+            msg = "",
+            sender = "",
+            unread = 0,
+            time = "23/05/07 09:41:00.0000",
+            type = "participate",
+            account = null,
+            imgIndex = null,
+            nickName = "Changjin",
+            profile = "chick",
+            profile_BG = SOZIP_BG_3,
+            url = emptyList()
+        ),
+        SOZIPData = ChatListDataModel(
+            docId = "",
+            SOZIPName = "",
+            color = SOZIP_BG_3,
+            currentPeople = 0,
+            last_msg_time = "",
+            last_msg = "",
+            manager = "",
+            participants = emptyMap(),
+            profiles = emptyMap(),
+            status = ""
+        ),
         modifier = Modifier
     )
 }

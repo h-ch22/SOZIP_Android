@@ -32,6 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.eje.sozip.ui.theme.SOZIPColorPalette
 import com.eje.sozip.ui.theme.SOZIPTheme
 import com.eje.sozip.ui.theme.accent
@@ -41,7 +43,7 @@ import com.eje.sozip.userManagement.helper.UserManagement
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NotificationView(){
+fun NotificationView(parent: NavHostController){
     val helper = UserManagement()
     val receiveMarketing = remember {
         mutableStateOf(false)
@@ -72,7 +74,7 @@ fun NotificationView(){
                 TopAppBar(
                     title = { Text(text = "알림", color = SOZIPColorPalette.current.txtColor)},
                     navigationIcon = {
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = { parent.popBackStack() }) {
                             Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null, tint = accent)
                         }
                     },
@@ -133,5 +135,5 @@ fun NotificationView(){
 @Preview
 @Composable
 fun NotificationView_previews(){
-    NotificationView()
+    NotificationView(rememberNavController())
 }

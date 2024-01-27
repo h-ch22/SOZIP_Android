@@ -55,6 +55,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.eje.sozip.frameworks.helper.DataStoreUtil
 import com.eje.sozip.frameworks.models.OnStartScreens
 import com.eje.sozip.frameworks.ui.StartActivity
@@ -71,7 +73,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditPasswordView(){
+fun EditPasswordView(parent: NavHostController){
     val auth = FirebaseAuth.getInstance()
     val currentPassword = remember {
         mutableStateOf("")
@@ -120,7 +122,7 @@ fun EditPasswordView(){
                         Text(text = "비밀번호 변경", color = SOZIPColorPalette.current.txtColor)
                     },
                     navigationIcon = {
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = { parent.popBackStack() }) {
                             Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null, tint = accent)
                         }
                     },
@@ -300,7 +302,7 @@ fun EditPasswordView(){
                                     ),
                                     elevation = ButtonDefaults.buttonElevation(5.dp, disabledElevation = 5.dp)
                                 ) {
-                                    Row(verticalAlignment = Alignment.CenterVertically){
+                                    Row{
                                         androidx.compose.material3.Text("비밀번호 변경하기", color = white)
                                         androidx.compose.material3.Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null, tint = white)
                                     }
@@ -390,5 +392,5 @@ fun EditPasswordView(){
 @Preview
 @Composable
 fun EditPasswordView_previews(){
-    EditPasswordView()
+    EditPasswordView(rememberNavController())
 }

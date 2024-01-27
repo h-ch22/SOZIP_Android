@@ -290,7 +290,7 @@ fun AdditionalUserInfoView(
                                     ),
                                     elevation = ButtonDefaults.buttonElevation(5.dp, disabledElevation = 5.dp)
                                 ) {
-                                    Row(verticalAlignment = Alignment.CenterVertically){
+                                    Row{
                                         Text("가입하기", color = white)
                                         Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null, tint = white)
                                     }

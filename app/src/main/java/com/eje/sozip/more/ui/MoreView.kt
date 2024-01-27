@@ -52,15 +52,15 @@ fun MoreView(){
     SOZIPTheme {
         NavHost(navController = navController, startDestination = "MoreView" ){
             composable(route = "ProfileView"){
-                ProfileView()
+                ProfileView(navController)
             }
 
             composable(route = "FeedbackHubView"){
-                FeedbackHubView()
+                FeedbackHubView(navController)
             }
 
             composable(route = "InfoView"){
-                InfoView()
+                InfoView(navController)
             }
 
             composable(route = "MoreView"){

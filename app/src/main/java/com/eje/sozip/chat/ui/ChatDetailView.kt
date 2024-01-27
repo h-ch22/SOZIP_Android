@@ -77,6 +77,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.eje.sozip.SOZIP.helper.SOZIPHelper
 import com.eje.sozip.SOZIP.models.SOZIPDataModel
 import com.eje.sozip.SOZIP.models.SOZIPParticipantsListModel
@@ -102,7 +104,7 @@ import kotlinx.coroutines.launch
     ExperimentalMaterialApi::class
 )
 @Composable
-fun ChatDetailView(SOZIPData : ChatListDataModel){
+fun ChatDetailView(SOZIPData : ChatListDataModel, parent: NavHostController){
     val msg = remember {
         mutableStateOf("")
     }
@@ -161,7 +163,9 @@ fun ChatDetailView(SOZIPData : ChatListDataModel){
         ModalBottomSheetLayout(sheetContent = {
             if(modalSheetState.isVisible){
                 Surface(modifier = Modifier.background(SOZIPColorPalette.current.background)) {
-                    Column(modifier = Modifier.fillMaxWidth().background(SOZIPColorPalette.current.background)) {
+                    Column(modifier = Modifier
+                        .fillMaxWidth()
+                        .background(SOZIPColorPalette.current.background)) {
                         Row(modifier = Modifier.padding(horizontal = 20.dp)){
                             Spacer(modifier = Modifier.weight(1f))
 
@@ -191,7 +195,7 @@ fun ChatDetailView(SOZIPData : ChatListDataModel){
                 TopAppBar(
                     title = { Text(text = AES256Util.decrypt(SOZIPData.SOZIPName), color = SOZIPColorPalette.current.txtColor) },
                     navigationIcon = {
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = { parent.popBackStack() }) {
                             Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null, tint = accent)
                         }
                     },
@@ -440,5 +444,5 @@ fun ChatDetailView(SOZIPData : ChatListDataModel){
 @Preview
 @Composable
 fun ChatDetailView_previews(){
-    ChatDetailView(SOZIPData = ChatListDataModel())
+    ChatDetailView(SOZIPData = ChatListDataModel(), parent = rememberNavController())
 }

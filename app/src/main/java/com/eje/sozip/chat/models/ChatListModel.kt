@@ -91,11 +91,11 @@ fun ChatListModel(data : ChatListDataModel, modifier : Modifier, onClickStartSou
                                     val profile_icon = profile_split.get(0)
                                     val profile_bg = profile_split.get(1)
 
-                                    Text(profile_icon ?: "chick", modifier = Modifier
+                                    Text(UserManagement.convertProfileToEmoji(profile_icon ?: "chick"), modifier = Modifier
                                         .drawBehind {
                                             drawRoundRect(
                                                 color = UserManagement.convertProfileBGToColor(
-                                                    profile_bg ?: "bg_3"
+                                                    profile_bg
                                                 ),
                                                 cornerRadius = CornerRadius(
                                                     x = 15.dp.toPx(),
@@ -117,7 +117,7 @@ fun ChatListModel(data : ChatListDataModel, modifier : Modifier, onClickStartSou
                                             .drawBehind {
                                                 drawRoundRect(
                                                     color = UserManagement.convertProfileBGToColor(
-                                                        profile_bg ?: "bg_3"
+                                                        profile_bg
                                                     ),
                                                     cornerRadius = CornerRadius(
                                                         x = 15.dp.toPx(),
@@ -145,12 +145,12 @@ fun ChatListModel(data : ChatListDataModel, modifier : Modifier, onClickStartSou
                                                         val profile_bg = profile_split.get(1)
 
                                                         Text(UserManagement.convertProfileToEmoji(
-                                                            profile_icon ?: "chick"
+                                                            profile_icon
                                                         ), modifier = Modifier
                                                             .drawBehind {
                                                                 drawRoundRect(
                                                                     color = UserManagement.convertProfileBGToColor(
-                                                                        profile_bg ?: "bg_3"
+                                                                        profile_bg
                                                                     ),
                                                                     cornerRadius = CornerRadius(
                                                                         x = 15.dp.toPx(),

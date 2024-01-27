@@ -35,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -49,14 +50,14 @@ import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileView(){
+fun ProfileView(parent: NavHostController){
     val auth = FirebaseAuth.getInstance()
     val navController = rememberNavController()
 
     SOZIPTheme {
         NavHost(navController = navController, startDestination = "ProfileView"){
             composable(route = "EditProfileView"){
-                EditProfileView()
+                EditProfileView(navController)
             }
 
             composable(route = "ProfileView"){
@@ -67,7 +68,7 @@ fun ProfileView(){
                                 Text(text = "프로필 보기", color = SOZIPColorPalette.current.txtColor)
                             },
                             navigationIcon = {
-                                IconButton(onClick = { /*TODO*/ }) {
+                                IconButton(onClick = { parent.popBackStack() }) {
                                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null, tint = accent)
                                 }
                             },

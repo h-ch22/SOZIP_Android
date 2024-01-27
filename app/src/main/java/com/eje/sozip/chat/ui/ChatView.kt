@@ -67,7 +67,7 @@ fun ChatView(){
 
         NavHost(navController = navController, startDestination = "ChatView"){
             composable(route = "ChatDetailView"){
-                ChatDetailView(SOZIPData = selectedIndex)
+                ChatDetailView(SOZIPData = selectedIndex, parent = navController)
             }
 
             composable(route = "ChatView"){

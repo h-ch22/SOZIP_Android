@@ -145,11 +145,11 @@ fun HomeView(){
 
         NavHost(navController = navController, startDestination = "Home"){
             composable(route = "SOZIPDetailView"){
-                SOZIPDetailView(selectedIndex)
+                SOZIPDetailView(selectedIndex, parent = navController)
             }
 
             composable(route = "NotificationView"){
-                NotificationView()
+                NotificationView(navController)
             }
 
             composable(route = "Home"){

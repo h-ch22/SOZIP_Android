@@ -34,7 +34,6 @@ import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Money
@@ -74,6 +73,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -97,7 +97,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditProfileView() {
+fun EditProfileView(parent: NavHostController) {
     val currentIcon = remember {
         mutableStateOf(UserManagement.userInfo?.profile)
     }
@@ -136,15 +136,11 @@ fun EditProfileView() {
     SOZIPTheme {
         NavHost(navController = navController, startDestination = "EditProfileView" ){
             composable("EditPasswordView"){
-                EditPasswordView()
+                EditPasswordView(navController)
             }
 
             composable("UpdatePhoneView"){
                 UpdatePhoneView()
-            }
-
-            composable("AccountManagementView"){
-                AccountManagementView(false)
             }
 
             composable(route = "EditProfileView"){
@@ -155,7 +151,7 @@ fun EditProfileView() {
                                 Text(text = "프로필 정보 변경", color = SOZIPColorPalette.current.txtColor)
                             },
                             navigationIcon = {
-                                IconButton(onClick = { /*TODO*/ }) {
+                                IconButton(onClick = { parent.popBackStack() }) {
                                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null, tint = accent)
                                 }
                             },
@@ -362,11 +358,7 @@ fun EditProfileView() {
                                 Spacer(modifier = Modifier.height(10.dp))
 
                                 Button(onClick = {
-                                    navController.navigate("AccountManagementView"){
-                                        popUpTo("EditProfileView"){
-                                            inclusive = false
-                                        }
-                                    }
+
                                 },
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = SOZIPColorPalette.current.btnColor
@@ -378,7 +370,7 @@ fun EditProfileView() {
                                     contentPadding = PaddingValues(start = 15.dp)
                                 ) {
                                     Row(horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(imageVector = Icons.Default.CreditCard, contentDescription = null, tint = SOZIPColorPalette.current.txtColor)
+                                        Icon(imageVector = Icons.Default.Money, contentDescription = null, tint = SOZIPColorPalette.current.txtColor)
                                         Spacer(modifier = Modifier.width(5.dp))
                                         androidx.compose.material3.Text(
                                             "계좌 관리",
@@ -418,7 +410,7 @@ fun EditProfileView() {
                                     ),
                                     elevation = ButtonDefaults.buttonElevation(5.dp, disabledElevation = 5.dp)
                                 ) {
-                                    Row(verticalAlignment = Alignment.CenterVertically){
+                                    Row{
                                         androidx.compose.material3.Text("프로필 변경하기", color = white)
                                         androidx.compose.material3.Icon(
                                             imageVector = Icons.Default.ChevronRight,
@@ -671,5 +663,5 @@ fun EditProfileView() {
 @Preview
 @Composable
 fun EditProfileView_previews(){
-    EditProfileView()
+    EditProfileView(rememberNavController())
 }

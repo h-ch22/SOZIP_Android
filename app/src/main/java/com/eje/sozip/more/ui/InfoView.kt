@@ -48,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -63,7 +64,7 @@ import com.eje.sozip.ui.theme.red
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InfoView(){
+fun InfoView(parent: NavHostController){
     val navController = rememberNavController()
     var versionName: String = ""
     val latest = remember {
@@ -105,7 +106,7 @@ fun InfoView(){
                             androidx.compose.material.Text(text = "정보", color = SOZIPColorPalette.current.txtColor)
                         },
                         navigationIcon = {
-                            IconButton(onClick = { /*TODO*/ }) {
+                            IconButton(onClick = { parent.popBackStack() }) {
                                 androidx.compose.material.Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null, tint = accent)
                             }
                         },
@@ -122,7 +123,8 @@ fun InfoView(){
                                 .verticalScroll(rememberScrollState())) {
                             Column(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(10.dp)) {
                                 Row(modifier = Modifier
-                                    .fillMaxWidth().shadow(5.dp)
+                                    .fillMaxWidth()
+                                    .shadow(5.dp)
                                     .height(150.dp)
                                     .background(
                                         color = SOZIPColorPalette.current.btnColor,
@@ -327,5 +329,5 @@ fun InfoView(){
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
 @Composable
 fun InfoView_previews(){
-    InfoView()
+    InfoView(rememberNavController())
 }

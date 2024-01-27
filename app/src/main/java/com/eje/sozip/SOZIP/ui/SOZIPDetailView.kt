@@ -68,6 +68,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.eje.sozip.SOZIP.helper.SOZIPHelper
 import com.eje.sozip.SOZIP.models.ParticipateSOZIPResultModel
 import com.eje.sozip.SOZIP.models.SOZIPDataModel
@@ -87,7 +89,7 @@ import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SOZIPDetailView(data : SOZIPDataModel, showTopBar : Boolean = true){
+fun SOZIPDetailView(data : SOZIPDataModel, showTopBar : Boolean = true, parent: NavHostController? = null){
     val acceptCancelLicense = remember {
         mutableStateOf(false)
     }
@@ -151,7 +153,7 @@ fun SOZIPDetailView(data : SOZIPDataModel, showTopBar : Boolean = true){
                     androidx.compose.material3.TopAppBar(
                         title = { Text(text = data.SOZIPName, color = SOZIPColorPalette.current.txtColor)},
                         navigationIcon = {
-                            IconButton(onClick = { /*TODO*/ }) {
+                            IconButton(onClick = { parent?.popBackStack() }) {
                                 Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null, tint = accent)
                             }
                         },
@@ -409,6 +411,6 @@ fun SOZIPDetailView_preview(){
         currentPeople = 1, location = "", location_description = "너네집",
         time = Date(), Manager = "", participants = mapOf(), address = "전라북도 전주시",
         status = "", color = SOZIP_BG_1, account = "", profile = mapOf(), url = null
-    )
+    ), parent = rememberNavController()
     )
 }

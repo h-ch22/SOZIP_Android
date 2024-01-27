@@ -185,7 +185,7 @@ fun UpdatePhoneView(){
                                     ),
                                     elevation = ButtonDefaults.buttonElevation(5.dp, disabledElevation = 5.dp)
                                 ) {
-                                    Row(verticalAlignment = Alignment.CenterVertically){
+                                    Row{
                                         androidx.compose.material3.Text("연락처 변경하기", color = white)
                                         androidx.compose.material3.Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null, tint = white)
                                     }
