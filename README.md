@@ -4,7 +4,7 @@
 # 소집 : SOZIP <br>
 ### An Application for Delivery Cost Dutch Pay<br>
 ###### '소집(SOZIP) means to gather (people, etc.) in Korean.'
-ⓒ 2021-2024. Changjin Ha All Rights Reserved.<br><br>
+ⓒ 2021 Changjin Ha, Sojung Moon. All Rights Reserved.<br><br>
 
 ## Features<br>
 #### Home<br>
