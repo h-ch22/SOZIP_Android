@@ -33,7 +33,7 @@
 
 ![ ](README/img_chat_1.png)<br>
 
-> Or you can send any images, back accounts, or manage your SOZIP. it's so easy. <br>
+> Or you can send any images, bank accounts, or manage your SOZIP. it's so easy. <br>
 
 ![ ](README/img_chat_2.png)<br>
 
